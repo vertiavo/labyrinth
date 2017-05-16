@@ -1,3 +1,5 @@
+package sample;
+
 import org.junit.jupiter.api.Test;
 import sample.Algorithm;
 
