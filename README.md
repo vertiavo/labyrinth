@@ -1,2 +1,0 @@
-# labyrinth
-SI javafx labyrinth
