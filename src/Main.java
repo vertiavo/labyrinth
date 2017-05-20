@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.geometry.Insets;
 
 import java.awt.*;
+import java.util.Arrays;
 
 public class Main extends Application{
     int [][]labyrinthElements;
@@ -57,6 +58,8 @@ public class Main extends Application{
         int numCols = 20 ;
         int numRows = 20 ;
         labyrinthElements=new int[20][20];
+        for (int[] row: labyrinthElements)
+            Arrays.fill(row, 0);
 
         for (int i = 0 ; i < numCols ; i++) {
             ColumnConstraints colConstraints = new ColumnConstraints();
@@ -81,14 +84,17 @@ public class Main extends Application{
 
         pane.setOnMouseClicked(e -> {
             System.out.printf("Mouse clicked cell [%d, %d]%n",  rowIndex,colIndex);
-            pane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
-            if(pane.getBackground().getFills().get(0).getFill()==Color.AQUA){
-                pane.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
-            }
-            else{
-                pane.setBackground(new Background(new BackgroundFill(Color.AQUA, CornerRadii.EMPTY, Insets.EMPTY)));
-            }
 
+            try {
+                if(pane.getBackground().getFills().get(0).getFill()==Color.BLACK){
+                    pane.setBackground(null);
+                }
+                else{
+                    pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+                }
+            } catch (Exception exc) {
+                pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
 
         });
         grid.add(pane, colIndex, rowIndex);
