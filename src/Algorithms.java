@@ -28,7 +28,7 @@ public class Algorithms {
         this.result = new ArrayList<>();
 
         Arrays.fill(visited, false);
-        Arrays.fill(algorithmArray, 1);
+        //Arrays.fill(algorithmArray, 1);
 
         // Wypelnienie tablicy list incydencji, znalezienie punktow start i koniec
         initialization();
