@@ -40,22 +40,17 @@ public class Main extends Application{
         Menu menuFile = new Menu("File");
         MenuItem add = new MenuItem("Create");
         menuFile.getItems().addAll(add);
-        add.setOnAction(e->{
-            DFSAlgorithm OP = new DFSAlgorithm(labyrinthElements);
-            for (int i=0;i<labyrinthElements.length;i++){
-                for (int j=0;j<labyrinthElements[i].length;j++){
-                    OP.visited[j][i] = false;
-                }
-            }
-            OP.visited[OP.getOgre(labyrinthElements).x][OP.getOgre(labyrinthElements).y] = true;
-            System.out.println("Ogre: " + OP.getOgre(labyrinthElements));
-            OP.dfs(OP.maze, OP.getOgre(labyrinthElements));
-        });
 
+       //obsluga rozwiazania
+        
 
        topMenu.getMenus().addAll(menuFile);
 
         return topMenu;
+    }
+
+    private void printLabyrinth() {
+        System.out.println(Arrays.deepToString(labyrinthElements));
     }
 
     private GridPane setCenterGrid() {
