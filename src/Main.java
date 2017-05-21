@@ -1,4 +1,5 @@
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -14,13 +15,13 @@ import javafx.geometry.Insets;
 
 import java.awt.*;
 import java.io.*;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main extends Application{
     int [][]labyrinthElements;
     int counter=0;
     Stage primaryStage;
+    GridPane grid;
     public static void main(String[] args) {
         // write your code here
         launch(args);
@@ -47,23 +48,63 @@ public class Main extends Application{
         MenuBar topMenu=new MenuBar();
 
         Menu menuFile = new Menu("File");
-        MenuItem add = new MenuItem("Create");
+        MenuItem dfs = new MenuItem("DFS");
         MenuItem save=new MenuItem("Save to file");
         MenuItem load=new MenuItem("Load from file");
-        menuFile.getItems().addAll(add,save,load);
+        menuFile.getItems().addAll(dfs,save,load);
 
        //obsluga rozwiazania
+        dfs.setOnAction(e->{
+            DfsSolution();
+        });
         save.setOnAction(e->{
             SaveToFile();
         });
         load.setOnAction(e->{
             LoadFromFile();
+            UpdateGUI();
         });
        topMenu.getMenus().addAll(menuFile);
 
         return topMenu;
     }
 
+    private void DfsSolution() {
+            Algorithms a=new Algorithms(labyrinthElements);
+            java.util.List<Point> points=a.getPoints();
+        for (Point p:points) {
+            labyrinthElements[p.x][p.y]=4;
+
+        }
+        UpdateGUI();
+    }
+    private void UpdateGUI(){
+        for (int i = 0; i <labyrinthElements.length ; i++) {
+            for (int j = 0; j < labyrinthElements[i].length; j++) {
+                Pane pane=new Pane();
+                if(labyrinthElements[i][j]==0){
+                    grid.add(pane, j, i);
+                }
+                if(labyrinthElements[i][j]==1){
+                    pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+                    grid.add(pane, j, i);
+                }
+                if(labyrinthElements[i][j]==2){
+                    pane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+                    grid.add(pane, j, i);
+                }
+                if(labyrinthElements[i][j]==3){
+                    pane.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+                    grid.add(pane, j, i);
+                }
+                if(labyrinthElements[i][j]==4){
+                    pane.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
+                    grid.add(pane, j, i);
+                }
+
+            }
+        }
+    }
     private void SaveToFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save file");
@@ -124,7 +165,7 @@ public class Main extends Application{
     }
 
     private GridPane setCenterGrid() {
-         GridPane grid =new GridPane();
+         grid =new GridPane();
          grid.gridLinesVisibleProperty().setValue(true);
          initialize(grid);
         return grid;
