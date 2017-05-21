@@ -4,6 +4,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -14,6 +16,7 @@ import java.util.Arrays;
 
 public class Main extends Application{
     int [][]labyrinthElements;
+    int counter=0;
     public static void main(String[] args) {
         // write your code here
         launch(args);
@@ -37,6 +40,17 @@ public class Main extends Application{
         Menu menuFile = new Menu("File");
         MenuItem add = new MenuItem("Create");
         menuFile.getItems().addAll(add);
+        add.setOnAction(e->{
+            DFSAlgorithm OP = new DFSAlgorithm(labyrinthElements);
+            for (int i=0;i<labyrinthElements.length;i++){
+                for (int j=0;j<labyrinthElements[i].length;j++){
+                    OP.visited[j][i] = false;
+                }
+            }
+            OP.visited[OP.getOgre(labyrinthElements).x][OP.getOgre(labyrinthElements).y] = true;
+            System.out.println("Ogre: " + OP.getOgre(labyrinthElements));
+            OP.dfs(OP.maze, OP.getOgre(labyrinthElements));
+        });
 
 
        topMenu.getMenus().addAll(menuFile);
@@ -48,10 +62,6 @@ public class Main extends Application{
          GridPane grid =new GridPane();
          grid.gridLinesVisibleProperty().setValue(true);
          initialize(grid);
-
-
-
-
         return grid;
     }
     public void initialize(GridPane grid) {
@@ -81,23 +91,61 @@ public class Main extends Application{
     }
     private void addPane(int colIndex, int rowIndex,GridPane grid) {
         Pane pane = new Pane();
-
-        pane.setOnMouseClicked(e -> {
+        pane.setOnMouseClicked((MouseEvent e) -> {
             System.out.printf("Mouse clicked cell [%d, %d]%n",  rowIndex,colIndex);
+            if(e.getButton()==MouseButton.PRIMARY){
 
-            try {
-                if(pane.getBackground().getFills().get(0).getFill()==Color.BLACK){
-                    pane.setBackground(null);
-                }
-                else{
+                try {
+                    if(pane.getBackground().getFills().get(0).getFill()==Color.BLACK){
+                        pane.setBackground(null);
+                        labyrinthElements[rowIndex][colIndex]=0;
+                    }
+                    else{
+                        pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+                        labyrinthElements[rowIndex][colIndex]=1;
+                    }
+                } catch (Exception exc) {
                     pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+                    labyrinthElements[rowIndex][colIndex]=1;
                 }
-            } catch (Exception exc) {
-                pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
+            }
+            if(e.getButton()== MouseButton.SECONDARY ){
+                try {
+                    if(pane.getBackground().getFills().get(0).getFill()==Color.YELLOW ||pane.getBackground().getFills().get(0).getFill()==Color.GREEN ){
+                        pane.setBackground(null);
+                        labyrinthElements[rowIndex][colIndex]=0;
+                        counter--;
+                    }
+                    else{
+                        if(counter==0){
+                            pane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+                            labyrinthElements[rowIndex][colIndex]=2;
+                            counter++;
+                        }
+                        else if(counter==1){
+                            pane.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+                            labyrinthElements[rowIndex][colIndex]=3;
+                            counter++;
+                        }
+
+                    }
+                } catch (Exception exc) {
+                    if(counter==0){
+                        pane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+                        labyrinthElements[rowIndex][colIndex]=2;
+                        counter++;
+                    }
+                    else if (counter==1){
+                        pane.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+                        labyrinthElements[rowIndex][colIndex]=3;
+                        counter++;
+                    }
+
+                }
             }
 
         });
-        grid.add(pane, colIndex, rowIndex);
 
+        grid.add(pane, colIndex, rowIndex);
     }
 }
