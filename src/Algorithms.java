@@ -1,6 +1,5 @@
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by vertiavo on 16.05.17.
@@ -13,19 +12,22 @@ import java.util.List;
 public class Algorithms {
 
     private int n;
+    private int index;
     private int startX, startY;
     private int[][] guiArray;
-    private int[][] algorithmArray;
     private boolean[][] visited;
+    private Point[] points;
 
     public Algorithms(int[][] guiArray) {
         this.guiArray = guiArray;
         this.n = guiArray.length;
-        this.algorithmArray = new int[n*n][4];
+        this.points = new Point[n*n];
         this.visited = new boolean[n][n];
+        this.index = 0;
 
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++) {
             Arrays.fill(visited[i], false);
+        }
 
         // Wypelnienie tablicy list incydencji, znalezienie punktow start i koniec
         initialization();
@@ -47,7 +49,7 @@ public class Algorithms {
 
     private void DFS(int v, int k) {
         visited[v][k] = true;
-        System.out.println("(" + v + ", " + k + ")");
+        points[index++] = new Point(v, k);
 
         if (guiArray[v][k] == 3)
             return;
@@ -122,5 +124,9 @@ public class Algorithms {
                 }
             }
         }
+    }
+
+    public Point[] getPoints() {
+        return points;
     }
 }

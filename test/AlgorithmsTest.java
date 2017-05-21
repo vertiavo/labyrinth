@@ -41,7 +41,7 @@ public class AlgorithmsTest {
                 {1, 1, 1, 1, 1, 1, 1, 1}
         };
 
-        Algorithms algorithm = new Algorithms(tab2);
+        Algorithms algorithm = new Algorithms(tab);
     }
 
 }
