@@ -19,6 +19,7 @@ public class Algorithms {
     private int startX, startY;
     private int[][] guiArray;
     private boolean[][] visited;
+    private List<Point> localPoints;
     private List<Point> points;
     private boolean foundWay;
 
@@ -29,6 +30,7 @@ public class Algorithms {
         this.guiArray = guiArray;
         this.n = guiArray.length;
         this.foundWay = false;
+        this.localPoints = new ArrayList<>();
         this.points = new ArrayList<>();
         this.visited = new boolean[n][n];
 
@@ -64,11 +66,10 @@ public class Algorithms {
      */
     private void DFS(int i, int j) {
         visited[i][j] = true;
-        points.add(new Point(i, j));
+        localPoints.add(new Point(i, j));
 
         if (guiArray[i][j] == 3) {
             foundWay = true;
-            return;
         }
 
         // W wewnętrznym if najpierw jest sprawdzane otoczenie obecnego wierchołka na obecnośc punktu końcowego
@@ -195,6 +196,13 @@ public class Algorithms {
                 DFS(i-1, j);
             if (guiArray[i][j-1] == 0 && !visited[i][j-1] && !foundWay)
                 DFS(i, j-1);
+        }
+
+        if (foundWay) {
+            points.addAll(localPoints);
+            return;
+        } else {
+            localPoints.remove(localPoints.size() - 1);
         }
     }
 
