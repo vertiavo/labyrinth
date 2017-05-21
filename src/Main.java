@@ -8,15 +8,19 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.geometry.Insets;
 
 import java.awt.*;
+import java.io.*;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Main extends Application{
     int [][]labyrinthElements;
     int counter=0;
+    Stage primaryStage;
     public static void main(String[] args) {
         // write your code here
         launch(args);
@@ -24,11 +28,16 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Labyrinth");
+        this.primaryStage=primaryStage;
+        this.primaryStage.setTitle("Labyrinth");
         BorderPane mainLayout=new BorderPane();
         Scene scene=new Scene(mainLayout,800,700);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        this.primaryStage.setScene(scene);
+        this.primaryStage.show();
+
+        labyrinthElements=new int[20][20];
+        for (int[] row: labyrinthElements)
+            Arrays.fill(row, 0);
 
         mainLayout.setCenter(setCenterGrid());
         mainLayout.setTop(setTopMenu());
@@ -39,18 +48,79 @@ public class Main extends Application{
 
         Menu menuFile = new Menu("File");
         MenuItem add = new MenuItem("Create");
-        menuFile.getItems().addAll(add);
+        MenuItem save=new MenuItem("Save to file");
+        MenuItem load=new MenuItem("Load from file");
+        menuFile.getItems().addAll(add,save,load);
 
        //obsluga rozwiazania
-        
-
+        save.setOnAction(e->{
+            SaveToFile();
+        });
+        load.setOnAction(e->{
+            LoadFromFile();
+        });
        topMenu.getMenus().addAll(menuFile);
 
         return topMenu;
     }
 
+    private void SaveToFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save file");
+        File file = fileChooser.showSaveDialog(primaryStage);
+        printLabyrinth();
+            try {
+                FileWriter writer = new FileWriter(file);
+                BufferedWriter output = new BufferedWriter(writer);
+                for (int[] array : labyrinthElements) {
+                    for (int item : array) {
+                        output.write(String.valueOf(item));
+                        output.write(" ");
+                    }
+                    output.write("\n");
+                }
+                output.flush();
+                output.close();
+
+            } catch (IOException ex) {
+               // AlertBox.Display("Error", "Bład zapisu pliku");
+            }
+
+    }
+    private  void LoadFromFile(){
+
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Load from file");
+            File file = fileChooser.showOpenDialog(primaryStage);
+            Scanner input = new Scanner(file);
+            while (input.hasNextLine()) {
+                for (int i = 0; i < 20; i++) {
+                    for (int j = 0; j < 20; j++) {
+                        try{//    System.out.println("number is ");
+                            labyrinthElements[i][j] = input.nextInt();
+                        }
+                        catch (java.util.NoSuchElementException e) {
+                            // e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            printLabyrinth();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void printLabyrinth() {
-        System.out.println(Arrays.deepToString(labyrinthElements));
+        for (int[] x : labyrinthElements)
+        {
+            for (int y : x)
+            {
+                System.out.print(y + " ");
+            }
+            System.out.println();
+        }
     }
 
     private GridPane setCenterGrid() {
@@ -62,9 +132,7 @@ public class Main extends Application{
     public void initialize(GridPane grid) {
         int numCols = 20 ;
         int numRows = 20 ;
-        labyrinthElements=new int[20][20];
-        for (int[] row: labyrinthElements)
-            Arrays.fill(row, 0);
+
 
         for (int i = 0 ; i < numCols ; i++) {
             ColumnConstraints colConstraints = new ColumnConstraints();
