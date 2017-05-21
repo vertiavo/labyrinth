@@ -22,6 +22,7 @@ public class Main extends Application{
     int counter=0;
     Stage primaryStage;
     GridPane grid;
+    BorderPane mainLayout;
     public static void main(String[] args) {
         // write your code here
         launch(args);
@@ -31,7 +32,7 @@ public class Main extends Application{
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage=primaryStage;
         this.primaryStage.setTitle("Labyrinth");
-        BorderPane mainLayout=new BorderPane();
+         mainLayout=new BorderPane();
         Scene scene=new Scene(mainLayout,800,700);
         this.primaryStage.setScene(scene);
         this.primaryStage.show();
@@ -62,6 +63,9 @@ public class Main extends Application{
         });
         load.setOnAction(e->{
             LoadFromFile();
+            mainLayout.setCenter(null);
+            mainLayout.setCenter(setCenterGrid());
+
             UpdateGUI();
         });
        topMenu.getMenus().addAll(menuFile);
