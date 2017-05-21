@@ -30,8 +30,18 @@ public class AlgorithmsTest {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1, 1}
         };
 
-        Algorithms algorithm = new Algorithms(tab);
-        System.out.println(algorithm.getResult());
+        int tab2[][] = {
+                {2, 0, 1, 1, 1, 1, 1, 1},
+                {1, 0, 0, 0, 0, 1, 0, 0},
+                {1, 1, 1, 1, 0, 1, 0, 1},
+                {1, 0, 0 ,0, 0, 0, 0, 3},
+                {1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1},
+                {1, 1, 1, 1, 1, 1, 1, 1}
+        };
+
+        Algorithms algorithm = new Algorithms(tab2);
     }
 
 }

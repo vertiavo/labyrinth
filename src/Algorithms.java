@@ -13,112 +13,114 @@ import java.util.List;
 public class Algorithms {
 
     private int n;
-    private int start;
-    private int finish;
+    private int startX, startY;
     private int[][] guiArray;
     private int[][] algorithmArray;
-    private boolean[] visited;
-    private List<Integer> result;
+    private boolean[][] visited;
 
     public Algorithms(int[][] guiArray) {
         this.guiArray = guiArray;
         this.n = guiArray.length;
         this.algorithmArray = new int[n*n][4];
-        this.visited = new boolean[n*n];
-        this.result = new ArrayList<>();
+        this.visited = new boolean[n][n];
 
-        Arrays.fill(visited, false);
-        //Arrays.fill(algorithmArray, 1);
+        for (int i = 0; i < n; i++)
+            Arrays.fill(visited[i], false);
 
         // Wypelnienie tablicy list incydencji, znalezienie punktow start i koniec
         initialization();
 
         // Uruchomienie algorytmu z punktu start
-        DFS(start);
+        DFS(startX, startY);
     }
 
     private void initialization() {
-        int line = 0;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 if (guiArray[i][j] == 2) {
-                    start = line;
-                } else if (guiArray[i][j] == 3) {
-                    finish = line;
+                    startX = j;
+                    startY = i;
                 }
-
-                // Pierwszy adres w tablicy algorithmArray = wiersz
-                // Drugi adres w tablicy algorithmArray = odpowiedni kierunek tak jak nizej
-                //      0
-                //  1   x   2
-                //      3
-
-                if (i == 0 && j == 0) {                             // lewy gorny rog
-                    algorithmArray[line][0] = 1;
-                    algorithmArray[line][1] = 1;
-                    algorithmArray[line][2] = guiArray[i][j+1];
-                    algorithmArray[line][3] = guiArray[i+1][j];
-                } else if (i == 0 && j < (n*n - 1)) {               // gorna linia
-                    algorithmArray[line][0] = 1;
-                    algorithmArray[line][1] = guiArray[i][j-1];
-                    algorithmArray[line][2] = guiArray[i][j+1];
-                    algorithmArray[line][3] = guiArray[i+1][j];
-                } else if (i == 0 && j == (n*n - 1)) {              // prawy gorny rog
-                    algorithmArray[line][0] = 1;
-                    algorithmArray[line][1] = guiArray[i][j-1];
-                    algorithmArray[line][2] = 1;
-                    algorithmArray[line][3] = guiArray[i+1][j];
-                } else if (i < (n*n-1) && j == 0) {                 // lewy brzeg
-                    algorithmArray[line][0] = guiArray[i-1][j];
-                    algorithmArray[line][1] = 1;
-                    algorithmArray[line][2] = guiArray[i][j + 1];
-                    algorithmArray[line][3] = guiArray[i + 1][j];
-                } else if (i < (n*n-1) && j < (n*n-1)) {            // poza brzegami
-                    algorithmArray[line][0] = guiArray[i-1][j];
-                    algorithmArray[line][1] = guiArray[i][j-1];
-                    algorithmArray[line][2] = guiArray[i][j + 1];
-                    algorithmArray[line][3] = guiArray[i + 1][j];
-                } else if (i < (n*n-1) && j == (n*n-1)) {           // prawy brzeg
-                    algorithmArray[line][0] = guiArray[i-1][j];
-                    algorithmArray[line][1] = guiArray[i][j-1];
-                    algorithmArray[line][2] = 1;
-                    algorithmArray[line][3] = guiArray[i + 1][j];
-                } else if (i == (n*n-1) && j == 0) {                // lewy dolny rog
-                    algorithmArray[line][0] = guiArray[i-1][j];
-                    algorithmArray[line][1] = 1;
-                    algorithmArray[line][2] = guiArray[i][j + 1];
-                    algorithmArray[line][3] = 1;
-                } else if (i == (n*n-1) && j < (n*n-1)) {           // dolna linia
-                    algorithmArray[line][0] = guiArray[i-1][j];
-                    algorithmArray[line][1] = guiArray[i][j-1];
-                    algorithmArray[line][2] = guiArray[i][j + 1];
-                    algorithmArray[line][3] = 1;
-                } else if (i == (n*n-1) && j == (n*n-1)) {          // prawy dolny rog
-                    algorithmArray[line][0] = guiArray[i-1][j];
-                    algorithmArray[line][1] = guiArray[i][j-1];
-                    algorithmArray[line][2] = 1;
-                    algorithmArray[line][3] = 1;
-                }
-
-                line++;
             }
         }
     }
 
-    private void DFS(int v) {
-        this.visited[v] = true;
-        result.add(v);
+    private void DFS(int v, int k) {
+        visited[v][k] = true;
+        System.out.println("(" + v + ", " + k + ")");
 
-        if (v == finish)
+        if (guiArray[v][k] == 3)
             return;
 
-        for (int i = 0; i < 4; i++) {
-            if ((this.algorithmArray[v][i] == 0 || this.algorithmArray[v][i] == 2) && !this.visited[i])
-                DFS(i);
-        }
-    }
+        for (int i = v; i < n; i++) {
+            for (int j = k; j < n; j++) {
+                if (i == 0 && j == 0) {                         // lewy gorny rog
+                    if ((guiArray[i][j+1] == 0 || guiArray[i][j+1] == 3) && !visited[i][j+1])
+                        DFS(i, j+1);
+                    if ((guiArray[i+1][j] == 0 || guiArray[i+1][j] == 3) && !visited[i+1][j])
+                        DFS(i + 1, j);
 
-    public List<Integer> getResult() {
-        return result;
+                } else if (i == 0 && j < (n-1)) {               // gorna linia
+                    if ((guiArray[i][j-1] == 0 || guiArray[i][j-1] == 3) && !visited[i][j-1])
+                        DFS(i, j-1);
+                    if ((guiArray[i][j+1] == 0 || guiArray[i][j+1] == 3) && !visited[i][j+1])
+                        DFS(i, j+1);
+                    if ((guiArray[i+1][j] == 0 || guiArray[i+1][j] == 3) && !visited[i+1][j])
+                        DFS(i+1, j);
+
+                } else if (i == 0 && j == (n-1)) {              // prawy gorny rog
+                    if ((guiArray[i][j-1] == 0 || guiArray[i][j-1] == 3) && !visited[i][j-1])
+                        DFS(i, j-1);
+                    if ((guiArray[i+1][j] == 0 || guiArray[i+1][j] == 3) && !visited[i+1][j])
+                        DFS(i+1, j);
+
+                } else if (i < (n-1) && j == 0) {               // lewy brzeg
+                    if ((guiArray[i-1][j] == 0 || guiArray[i-1][j] == 3) && !visited[i-1][j])
+                        DFS(i-1, j);
+                    if ((guiArray[i][j+1] == 0 || guiArray[i][j+1] == 3) && !visited[i][j+1])
+                        DFS(i, j+1);
+                    if ((guiArray[i+1][j] == 0 || guiArray[i+1][j] == 3) && !visited[i+1][j])
+                        DFS(i+1, j);
+
+                } else if (i < (n-1) && j < (n-1)) {            // poza brzegami
+                    if ((guiArray[i-1][j] == 0 || guiArray[i-1][j] == 3) && !visited[i-1][j])
+                        DFS(i-1, j);
+                    if ((guiArray[i][j-1] == 0 || guiArray[i][j-1] == 3) && !visited[i][j-1])
+                        DFS(i, j-1);
+                    if ((guiArray[i][j+1] == 0 || guiArray[i][j+1] == 3) && !visited[i][j+1])
+                        DFS(i, j+1);
+                    if ((guiArray[i+1][j] == 0 || guiArray[i+1][j] == 3) && !visited[i+1][j])
+                        DFS(i+1, j);
+
+                } else if (i < (n-1) && j == (n-1)) {           // prawy brzeg
+                    if ((guiArray[i-1][j] == 0 || guiArray[i-1][j] == 3) && !visited[i-1][j])
+                        DFS(i-1, j);
+                    if ((guiArray[i][j-1] == 0 || guiArray[i][j-1] == 3) && !visited[i][j-1])
+                        DFS(i, j-1);
+                    if ((guiArray[i+1][j] == 0 || guiArray[i+1][j] == 3) && !visited[i+1][j])
+                        DFS(i+1, j);
+
+                } else if (i == (n-1) && j == 0) {              // lewy dolny rog
+                    if ((guiArray[i-1][j] == 0 || guiArray[i-1][j] == 3) && !visited[i-1][j])
+                        DFS(i-1, j);
+                    if ((guiArray[i][j+1] == 0 || guiArray[i][j+1] == 3) && !visited[i][j+1])
+                        DFS(i, j+1);
+
+                } else if (i == (n-1) && j < (n-1)) {           // dolna linia
+                    if ((guiArray[i-1][j] == 0 || guiArray[i-1][j] == 3) && !visited[i-1][j])
+                        DFS(i-1, j);
+                    if ((guiArray[i][j-1] == 0 || guiArray[i][j-1] == 3) && !visited[i][j-1])
+                        DFS(i, j-1);
+                    if ((guiArray[i][j+1] == 0 || guiArray[i][j+1] == 3) && !visited[i][j+1])
+                        DFS(i, j+1);
+
+                } else if (i == (n-1) && j == (n-1)) {          // prawy dolny rog
+                    if ((guiArray[i-1][j] == 0 || guiArray[i-1][j] == 3) && !visited[i-1][j])
+                        DFS(i-1, j);
+                    if ((guiArray[i][j-1] == 0 || guiArray[i][j-1] == 3) && !visited[i][j-1])
+                        DFS(i, j-1);
+                }
+            }
+        }
     }
 }
