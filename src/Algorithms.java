@@ -1,5 +1,7 @@
-import java.awt.*;
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by vertiavo on 16.05.17.
@@ -16,12 +18,12 @@ public class Algorithms {
     private int startX, startY;
     private int[][] guiArray;
     private boolean[][] visited;
-    private Point[] points;
+    private List<Point> points;
 
     public Algorithms(int[][] guiArray) {
         this.guiArray = guiArray;
         this.n = guiArray.length;
-        this.points = new Point[n*n];
+        this.points = new ArrayList<>();
         this.visited = new boolean[n][n];
         this.index = 0;
 
@@ -49,7 +51,7 @@ public class Algorithms {
 
     private void DFS(int v, int k) {
         visited[v][k] = true;
-        points[index++] = new Point(v, k);
+        points.add(new Point(v, k));
 
         if (guiArray[v][k] == 3)
             return;
@@ -126,7 +128,7 @@ public class Algorithms {
         }
     }
 
-    public Point[] getPoints() {
+    public List<Point> getPoints() {
         return points;
     }
 }

@@ -42,6 +42,7 @@ public class AlgorithmsTest {
         };
 
         Algorithms algorithm = new Algorithms(tab);
+        System.out.println(algorithm.getPoints());
     }
 
 }
