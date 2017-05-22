@@ -91,7 +91,7 @@ public class Main extends Application {
 
     private void DfsSolution() {
         Algorithms a = new Algorithms(labyrinthElements);
-        a.DFS(a.startX, a.startY);
+        a.DFS(a.startY, a.startX);
         List<Point> points = a.getPoints();
         for (Point p : points) {
             labyrinthElements[p.x][p.y] = 4;
@@ -101,7 +101,7 @@ public class Main extends Application {
 
     private void bfsSolution() {
         Algorithms a = new Algorithms(labyrinthElements);
-        a.BFS(a.startX, a.startY);
+        a.BFS(a.startY, a.startX);
         for (Point p : a.getPoints()) {
             labyrinthElements[p.x][p.y] = 4;
         }
