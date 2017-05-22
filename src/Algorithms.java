@@ -1,11 +1,9 @@
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by vertiavo on 16.05.17.
- *
+ * <p>
  * Legenda labiryntu:
  * 0 to gdy puste pole
  * 1 gdy przeszkoda
@@ -16,7 +14,7 @@ import java.util.List;
 public class Algorithms {
 
     private int n;
-    private int startX, startY;
+    public int startX, startY;
     private int[][] guiArray;
     private boolean[][] visited;
     private List<Point> localPoints;
@@ -40,9 +38,6 @@ public class Algorithms {
 
         // Wypelnienie tablicy list incydencji, znalezienie punktow start i koniec
         initialization();
-
-        // Uruchomienie algorytmu z punktu start
-        DFS(startX, startY);
     }
 
     /**
@@ -61,10 +56,11 @@ public class Algorithms {
 
     /**
      * Metoda realizująca rekurencyjny algorytm DFS
+     *
      * @param i Współrzędna X punktu startowego
      * @param j Współrzędna Y punktu startowego
      */
-    private void DFS(int i, int j) {
+    public void DFS(int i, int j) {
         visited[i][j] = true;
         localPoints.add(new Point(i, j));
 
@@ -72,130 +68,130 @@ public class Algorithms {
             foundWay = true;
         }
 
-        // W wewnętrznym if najpierw jest sprawdzane otoczenie obecnego wierchołka na obecnośc punktu końcowego
+        // W wewnętrznym if najpierw jest sprawdzane otoczenie obecnego wierzchołka na obecnośc punktu końcowego
         // Potem następuje przeszukiwanie możliwej drogi
         if (i == 0 && j == 0) {                         // lewy gorny rog
-            if (guiArray[i][j+1] == 3 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
-            if (guiArray[i+1][j] == 3 && !visited[i+1][j] && !foundWay)
+            if (guiArray[i][j + 1] == 3 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
+            if (guiArray[i + 1][j] == 3 && !visited[i + 1][j] && !foundWay)
                 DFS(i + 1, j);
 
-            if (guiArray[i][j+1] == 0 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
-            if (guiArray[i+1][j] == 0 && !visited[i+1][j] && !foundWay)
+            if (guiArray[i][j + 1] == 0 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
+            if (guiArray[i + 1][j] == 0 && !visited[i + 1][j] && !foundWay)
                 DFS(i + 1, j);
 
-        } else if (i == 0 && j < (n-1)) {               // gorna linia
-            if (guiArray[i][j-1] == 3 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i][j+1] == 3 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
-            if (guiArray[i+1][j] == 3 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+        } else if (i == 0 && j < (n - 1)) {               // gorna linia
+            if (guiArray[i][j - 1] == 3 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i][j + 1] == 3 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
+            if (guiArray[i + 1][j] == 3 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-            if (guiArray[i][j-1] == 0 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i][j+1] == 0 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
-            if (guiArray[i+1][j] == 0 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+            if (guiArray[i][j - 1] == 0 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i][j + 1] == 0 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
+            if (guiArray[i + 1][j] == 0 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-        } else if (i == 0 && j == (n-1)) {              // prawy gorny rog
-            if (guiArray[i][j-1] == 3 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i+1][j] == 3 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+        } else if (i == 0 && j == (n - 1)) {              // prawy gorny rog
+            if (guiArray[i][j - 1] == 3 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i + 1][j] == 3 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-            if (guiArray[i][j-1] == 0 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i+1][j] == 0 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+            if (guiArray[i][j - 1] == 0 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i + 1][j] == 0 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-        } else if (i < (n-1) && j == 0) {               // lewy brzeg
-            if (guiArray[i-1][j] == 3 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j+1] == 3 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
-            if (guiArray[i+1][j] == 3 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+        } else if (i < (n - 1) && j == 0) {               // lewy brzeg
+            if (guiArray[i - 1][j] == 3 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j + 1] == 3 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
+            if (guiArray[i + 1][j] == 3 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-            if (guiArray[i-1][j] == 0 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j+1] == 0 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
-            if (guiArray[i+1][j] == 0 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+            if (guiArray[i - 1][j] == 0 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j + 1] == 0 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
+            if (guiArray[i + 1][j] == 0 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-        } else if (i < (n-1) && j < (n-1)) {            // poza brzegami
-            if (guiArray[i-1][j] == 3 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j-1] == 3 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i][j+1] == 3 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
-            if (guiArray[i+1][j] == 3 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+        } else if (i < (n - 1) && j < (n - 1)) {            // poza brzegami
+            if (guiArray[i - 1][j] == 3 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j - 1] == 3 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i][j + 1] == 3 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
+            if (guiArray[i + 1][j] == 3 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-            if (guiArray[i-1][j] == 0 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j-1] == 0 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i][j+1] == 0 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
-            if (guiArray[i+1][j] == 0 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+            if (guiArray[i - 1][j] == 0 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j - 1] == 0 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i][j + 1] == 0 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
+            if (guiArray[i + 1][j] == 0 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-        } else if (i < (n-1) && j == (n-1)) {           // prawy brzeg
-            if (guiArray[i-1][j] == 3 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j-1] == 3 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i+1][j] == 3 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+        } else if (i < (n - 1) && j == (n - 1)) {           // prawy brzeg
+            if (guiArray[i - 1][j] == 3 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j - 1] == 3 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i + 1][j] == 3 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-            if (guiArray[i-1][j] == 0 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j-1] == 0 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i+1][j] == 0 && !visited[i+1][j] && !foundWay)
-                DFS(i+1, j);
+            if (guiArray[i - 1][j] == 0 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j - 1] == 0 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i + 1][j] == 0 && !visited[i + 1][j] && !foundWay)
+                DFS(i + 1, j);
 
-        } else if (i == (n-1) && j == 0) {              // lewy dolny rog
-            if (guiArray[i-1][j] == 3 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j+1] == 3 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
+        } else if (i == (n - 1) && j == 0) {              // lewy dolny rog
+            if (guiArray[i - 1][j] == 3 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j + 1] == 3 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
 
-            if (guiArray[i-1][j] == 0 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j+1] == 0 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
+            if (guiArray[i - 1][j] == 0 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j + 1] == 0 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
 
-        } else if (i == (n-1) && j < (n-1)) {           // dolna linia
-            if (guiArray[i-1][j] == 3 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j-1] == 3 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i][j+1] == 3 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
+        } else if (i == (n - 1) && j < (n - 1)) {           // dolna linia
+            if (guiArray[i - 1][j] == 3 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j - 1] == 3 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i][j + 1] == 3 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
 
-            if (guiArray[i-1][j] == 0 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j-1] == 0 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
-            if (guiArray[i][j+1] == 0 && !visited[i][j+1] && !foundWay)
-                DFS(i, j+1);
+            if (guiArray[i - 1][j] == 0 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j - 1] == 0 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
+            if (guiArray[i][j + 1] == 0 && !visited[i][j + 1] && !foundWay)
+                DFS(i, j + 1);
 
-        } else if (i == (n-1) && j == (n-1)) {          // prawy dolny rog
-            if (guiArray[i-1][j] == 3 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j-1] == 3 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
+        } else if (i == (n - 1) && j == (n - 1)) {          // prawy dolny rog
+            if (guiArray[i - 1][j] == 3 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j - 1] == 3 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
 
-            if (guiArray[i-1][j] == 0 && !visited[i-1][j] && !foundWay)
-                DFS(i-1, j);
-            if (guiArray[i][j-1] == 0 && !visited[i][j-1] && !foundWay)
-                DFS(i, j-1);
+            if (guiArray[i - 1][j] == 0 && !visited[i - 1][j] && !foundWay)
+                DFS(i - 1, j);
+            if (guiArray[i][j - 1] == 0 && !visited[i][j - 1] && !foundWay)
+                DFS(i, j - 1);
         }
 
         if (foundWay) {
@@ -206,9 +202,39 @@ public class Algorithms {
         }
     }
 
+    public void BFS(int i, int j) {
+        Deque<Point> queue = new ArrayDeque<>();
+        queue.offer(new Point(i, j));
+
+        while (!queue.isEmpty()) {
+            Point p = queue.poll();
+            points.add(p);
+            if (guiArray[p.x][p.y] == 3) {
+                foundWay = true;
+                return;
+            }
+
+            visited[p.x][p.y] = true;
+
+            if (p.x > 0 && !(guiArray[p.x - 1][p.y] == 1) && !visited[p.x - 1][p.y])
+                queue.offer(new Point(p.x - 1, p.y));
+            if (p.x < n - 1 && !(guiArray[p.x + 1][p.y] == 1) && !visited[p.x + 1][p.y])
+                queue.offer(new Point(p.x + 1, p.y));
+            if (p.y > 0 && !(guiArray[p.x][p.y - 1] == 1) && !visited[p.x][p.y - 1])
+                queue.offer(new Point(p.x, p.y - 1));
+            if (p.y < n - 1 && !(guiArray[p.x][p.y + 1] == 1) && !visited[p.x][p.y + 1])
+                queue.offer(new Point(p.x, p.y + 1));
+
+
+        }
+
+
+    }
+
 
     /**
      * Metoda zwracająca listę punktów powstałych w wyniku rozwiązania algorytmu
+     *
      * @return Lista punktów tworzących ścieżkę od startu do wyjścia
      */
     public List<Point> getPoints() {
@@ -217,6 +243,7 @@ public class Algorithms {
 
     /**
      * Metoda zwracająca wartość zmiennej foundWay
+     *
      * @return Zmienna informująca, czy algorytm odnalazł drogę do wyjścia
      */
     public boolean foundWay() {

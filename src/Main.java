@@ -20,8 +20,8 @@ import java.util.List;
 
 public class Main extends Application {
 
-    int [][]labyrinthElements;
-    int counter=0;
+    int[][] labyrinthElements;
+    int counter = 0;
     Stage primaryStage;
     GridPane grid;
     BorderPane mainLayout;
@@ -33,15 +33,15 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.primaryStage=primaryStage;
+        this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Labyrinth");
-        mainLayout=new BorderPane();
-        Scene scene=new Scene(mainLayout,800,700);
+        mainLayout = new BorderPane();
+        Scene scene = new Scene(mainLayout, 800, 700);
         this.primaryStage.setScene(scene);
         this.primaryStage.show();
 
-        labyrinthElements=new int[20][20];
-        for (int[] row: labyrinthElements)
+        labyrinthElements = new int[20][20];
+        for (int[] row : labyrinthElements)
             Arrays.fill(row, 0);
 
         mainLayout.setCenter(setCenterGrid());
@@ -49,7 +49,7 @@ public class Main extends Application {
     }
 
     private MenuBar setTopMenu() {
-        MenuBar topMenu=new MenuBar();
+        MenuBar topMenu = new MenuBar();
 
         Menu menuFile = new Menu("File");
         Menu algoFile = new Menu("Algorithm");
@@ -65,13 +65,16 @@ public class Main extends Application {
         algoFile.getItems().addAll(bfs, dfs);
 
         //obsluga rozwiazania
-        dfs.setOnAction(e->{
+        dfs.setOnAction(e -> {
             DfsSolution();
         });
-        save.setOnAction(e->{
+        bfs.setOnAction(e -> {
+            bfsSolution();
+        });
+        save.setOnAction(e -> {
             SaveToFile();
         });
-        load.setOnAction(e->{
+        load.setOnAction(e -> {
             LoadFromFile();
             mainLayout.setCenter(null);
             mainLayout.setCenter(setCenterGrid());
@@ -88,33 +91,43 @@ public class Main extends Application {
 
     private void DfsSolution() {
         Algorithms a = new Algorithms(labyrinthElements);
+        a.DFS(a.startX, a.startY);
         List<Point> points = a.getPoints();
-        for (Point p:points) {
+        for (Point p : points) {
             labyrinthElements[p.x][p.y] = 4;
         }
         UpdateGUI();
     }
 
-    private void UpdateGUI(){
-        for (int i = 0; i <labyrinthElements.length ; i++) {
+    private void bfsSolution() {
+        Algorithms a = new Algorithms(labyrinthElements);
+        a.BFS(a.startX, a.startY);
+        for (Point p : a.getPoints()) {
+            labyrinthElements[p.x][p.y] = 4;
+        }
+        UpdateGUI();
+    }
+
+    private void UpdateGUI() {
+        for (int i = 0; i < labyrinthElements.length; i++) {
             for (int j = 0; j < labyrinthElements[i].length; j++) {
                 Pane pane = new Pane();
-                if(labyrinthElements[i][j] == 0){
+                if (labyrinthElements[i][j] == 0) {
                     grid.add(pane, j, i);
                 }
-                if(labyrinthElements[i][j] == 1){
+                if (labyrinthElements[i][j] == 1) {
                     pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
                     grid.add(pane, j, i);
                 }
-                if(labyrinthElements[i][j] == 2){
+                if (labyrinthElements[i][j] == 2) {
                     pane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
                     grid.add(pane, j, i);
                 }
-                if(labyrinthElements[i][j] == 3){
+                if (labyrinthElements[i][j] == 3) {
                     pane.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
                     grid.add(pane, j, i);
                 }
-                if(labyrinthElements[i][j] == 4){
+                if (labyrinthElements[i][j] == 4) {
                     pane.setBackground(new Background(new BackgroundFill(Color.BLANCHEDALMOND, CornerRadii.EMPTY, Insets.EMPTY)));
                     grid.add(pane, j, i);
                 }
@@ -122,6 +135,7 @@ public class Main extends Application {
             }
         }
     }
+
     private void SaveToFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save file");
@@ -145,7 +159,8 @@ public class Main extends Application {
         }
 
     }
-    private  void LoadFromFile(){
+
+    private void LoadFromFile() {
 
         try {
             FileChooser fileChooser = new FileChooser();
@@ -155,10 +170,9 @@ public class Main extends Application {
             while (input.hasNextLine()) {
                 for (int i = 0; i < 20; i++) {
                     for (int j = 0; j < 20; j++) {
-                        try{//    System.out.println("number is ");
+                        try {//    System.out.println("number is ");
                             labyrinthElements[i][j] = input.nextInt();
-                        }
-                        catch (java.util.NoSuchElementException e) {
+                        } catch (java.util.NoSuchElementException e) {
                             // e.printStackTrace();
                         }
                     }
@@ -171,10 +185,8 @@ public class Main extends Application {
     }
 
     private void printLabyrinth() {
-        for (int[] x : labyrinthElements)
-        {
-            for (int y : x)
-            {
+        for (int[] x : labyrinthElements) {
+            for (int y : x) {
                 System.out.print(y + " ");
             }
             System.out.println();
@@ -182,82 +194,80 @@ public class Main extends Application {
     }
 
     private GridPane setCenterGrid() {
-        grid =new GridPane();
+        grid = new GridPane();
         grid.gridLinesVisibleProperty().setValue(true);
         initialize(grid);
         return grid;
     }
-    public void initialize(GridPane grid) {
-        int numCols = 20 ;
-        int numRows = 20 ;
 
-        for (int i = 0 ; i < numCols ; i++) {
+    public void initialize(GridPane grid) {
+        int numCols = 20;
+        int numRows = 20;
+
+        for (int i = 0; i < numCols; i++) {
             ColumnConstraints colConstraints = new ColumnConstraints();
             colConstraints.setHgrow(Priority.SOMETIMES);
             grid.getColumnConstraints().add(colConstraints);
         }
 
-        for (int i = 0 ; i < numRows ; i++) {
+        for (int i = 0; i < numRows; i++) {
             RowConstraints rowConstraints = new RowConstraints();
             rowConstraints.setVgrow(Priority.SOMETIMES);
             grid.getRowConstraints().add(rowConstraints);
         }
 
-        for (int i = 0 ; i < numCols ; i++) {
+        for (int i = 0; i < numCols; i++) {
             for (int j = 0; j < numRows; j++) {
-                addPane(i, j,grid);
+                addPane(i, j, grid);
             }
         }
     }
-    private void addPane(int colIndex, int rowIndex,GridPane grid) {
+
+    private void addPane(int colIndex, int rowIndex, GridPane grid) {
         Pane pane = new Pane();
         pane.setOnMouseClicked((MouseEvent e) -> {
-            System.out.printf("Mouse clicked cell [%d, %d]%n",  rowIndex,colIndex);
-            if(e.getButton()==MouseButton.PRIMARY){
+            System.out.printf("Mouse clicked cell [%d, %d]%n", rowIndex, colIndex);
+            if (e.getButton() == MouseButton.PRIMARY) {
 
                 try {
-                    if(pane.getBackground().getFills().get(0).getFill()==Color.BLACK){
+                    if (pane.getBackground().getFills().get(0).getFill() == Color.BLACK) {
                         pane.setBackground(null);
-                        labyrinthElements[rowIndex][colIndex]=0;
-                    }
-                    else{
+                        labyrinthElements[rowIndex][colIndex] = 0;
+                    } else {
                         pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-                        labyrinthElements[rowIndex][colIndex]=1;
+                        labyrinthElements[rowIndex][colIndex] = 1;
                     }
                 } catch (Exception exc) {
                     pane.setBackground(new Background(new BackgroundFill(Color.BLACK, CornerRadii.EMPTY, Insets.EMPTY)));
-                    labyrinthElements[rowIndex][colIndex]=1;
+                    labyrinthElements[rowIndex][colIndex] = 1;
                 }
             }
-            if(e.getButton()== MouseButton.SECONDARY ){
+            if (e.getButton() == MouseButton.SECONDARY) {
                 try {
-                    if(pane.getBackground().getFills().get(0).getFill()==Color.YELLOW ||pane.getBackground().getFills().get(0).getFill()==Color.GREEN ){
+                    if (pane.getBackground().getFills().get(0).getFill() == Color.YELLOW || pane.getBackground().getFills().get(0).getFill() == Color.GREEN) {
                         pane.setBackground(null);
-                        labyrinthElements[rowIndex][colIndex]=0;
+                        labyrinthElements[rowIndex][colIndex] = 0;
                         counter--;
-                    }
-                    else{
-                        if(counter==0){
+                    } else {
+                        if (counter == 0) {
                             pane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
-                            labyrinthElements[rowIndex][colIndex]=2;
+                            labyrinthElements[rowIndex][colIndex] = 2;
                             counter++;
-                        }
-                        else if(counter==1){
+                        } else if (counter == 1) {
                             pane.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-                            labyrinthElements[rowIndex][colIndex]=3;
+                            labyrinthElements[rowIndex][colIndex] = 3;
                             counter++;
                         }
 
                     }
                 } catch (Exception exc) {
-                    if(counter==0){
+                    if (counter == 0) {
                         pane.setBackground(new Background(new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
-                        labyrinthElements[rowIndex][colIndex]=2;
+                        labyrinthElements[rowIndex][colIndex] = 2;
                         counter++;
-                    }
-                    else if (counter==1){
+                    } else if (counter == 1) {
                         pane.setBackground(new Background(new BackgroundFill(Color.GREEN, CornerRadii.EMPTY, Insets.EMPTY)));
-                        labyrinthElements[rowIndex][colIndex]=3;
+                        labyrinthElements[rowIndex][colIndex] = 3;
                         counter++;
                     }
 
