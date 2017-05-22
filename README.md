@@ -5,4 +5,4 @@
 Funkcjonalność:
  - Odczyt labiryntu z pliku
  - Zapis labiryntu do pliku
- - Odnajdywanie ścieżki za pomocą algorytmu Depth-first search
+ - Odnajdywanie ścieżki za pomocą algorytmu Depth-first search oraz Breadth-first search
