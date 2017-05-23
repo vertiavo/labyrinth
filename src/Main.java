@@ -1,6 +1,4 @@
 import javafx.application.Application;
-import javafx.collections.ObservableList;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -57,11 +55,12 @@ public class Main extends Application {
         MenuItem load = new MenuItem("Load from file");
         MenuItem save = new MenuItem("Save to file");
         MenuItem exit = new MenuItem("Exit");
+        MenuItem clear=new MenuItem("Clear");
 
         MenuItem bfs = new MenuItem("BFS");
         MenuItem dfs = new MenuItem("DFS");
 
-        menuFile.getItems().addAll(load, save, exit);
+        menuFile.getItems().addAll(clear,load, save, exit);
         algoFile.getItems().addAll(bfs, dfs);
 
         //obsluga rozwiazania
@@ -82,11 +81,21 @@ public class Main extends Application {
             UpdateGUI();
         });
         exit.setOnAction(e -> System.exit(0));
-
+        clear.setOnAction(e->{
+            clearMaze();
+        });
         topMenu.getMenus().addAll(menuFile);
         topMenu.getMenus().addAll(algoFile);
 
         return topMenu;
+    }
+
+    private void clearMaze() {
+        for (int i = 0; i < labyrinthElements.length; i++) {
+              Arrays.fill(labyrinthElements[i],0);
+        }
+        mainLayout.setCenter(null);
+        mainLayout.setCenter(setCenterGrid());
     }
 
     private void DfsSolution() {
@@ -155,7 +164,7 @@ public class Main extends Application {
             output.close();
 
         } catch (IOException ex) {
-            // AlertBox.Display("Error", "Bład zapisu pliku");
+             AlertBox.display("Error", "Bład zapisu pliku");
         }
 
     }
@@ -180,7 +189,9 @@ public class Main extends Application {
             }
             printLabyrinth();
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+            AlertBox.display("Blad","Błąd wczytania pliku");
+            clearMaze();
         }
     }
 
