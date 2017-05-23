@@ -1,3 +1,5 @@
+import com.sun.javafx.scene.control.skin.VirtualFlow;
+
 import java.awt.Point;
 import java.util.*;
 
@@ -205,16 +207,25 @@ public class Algorithms {
     public void BFS(int i, int j) {
         Deque<Point> queue = new ArrayDeque<>();
         queue.offer(new Point(i, j));
-
+        List<Point> visitedNodes = new LinkedList<Point>();
+        List<Point> toremove = new LinkedList<Point>();
         while (!queue.isEmpty()) {
             Point p = queue.poll();
-            points.add(p);
             if (guiArray[p.x][p.y] == 3) {
                 foundWay = true;
                 return;
+            } else if (marked(points, p)) {             //jeśli została odwiedzona to usuwamy z listy wszystko po pierwszym wystąpieniu elementu
+                int tempIndex = 0;
+                for (Point point : points) {
+                    if (point.getX() == p.getX() && p.getY() == point.getY())
+                        tempIndex = points.indexOf(point);
+                }
+                points = points.subList(0, tempIndex);
             }
 
+
             visited[p.x][p.y] = true;
+            points.add(p);
 
             if (p.x > 0 && !(guiArray[p.x - 1][p.y] == 1) && !visited[p.x - 1][p.y])
                 queue.offer(new Point(p.x - 1, p.y));
@@ -228,9 +239,16 @@ public class Algorithms {
 
         }
 
-
     }
 
+    private boolean marked(List<Point> markedList, Point point) {
+        for (Point p : markedList) {
+            if (p.getX() == point.getX() && p.getY() == point.getY()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Metoda zwracająca listę punktów powstałych w wyniku rozwiązania algorytmu
@@ -246,6 +264,7 @@ public class Algorithms {
      *
      * @return Zmienna informująca, czy algorytm odnalazł drogę do wyjścia
      */
+
     public boolean foundWay() {
         return foundWay;
     }
