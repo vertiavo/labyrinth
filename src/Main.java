@@ -118,8 +118,11 @@ public class Main extends Application {
         for (int i = 0; i < labyrinthElements.length; i++) {
               Arrays.fill(labyrinthElements[i],0);
         }
+
         mainLayout.setCenter(null);
         mainLayout.setCenter(setCenterGrid());
+        mainLayout.setBottom(null);
+        mainLayout.setBottom(setBottomLabel());
     }
 
     private void DfsSolution() {

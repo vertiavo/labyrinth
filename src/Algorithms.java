@@ -196,7 +196,7 @@ public class Algorithms {
                 DFS(i, j - 1);
         }
 
-        if (foundWay) {
+        if (foundWay && points.isEmpty()) {
             points.addAll(localPoints);
             return;
         } else {
