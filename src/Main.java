@@ -1,15 +1,9 @@
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -19,17 +13,15 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -46,7 +38,6 @@ public class Main extends Application {
     GridPane grid;
     BorderPane mainLayout;
     ScrollPane scrollPane;
-
 
     public static void main(String[] args) {
         // write your code here
@@ -76,16 +67,6 @@ public class Main extends Application {
         scrollPane.setMaxHeight(150);
         scrollPane.setFitToWidth(true);
 
-//        label = new Text();
-//        label.setTextAlignment(TextAlignment.CENTER);
-//        label.setWrapText(true);
-//
-//        ScrollBar sc = new ScrollBar();
-//        sc.setOrientation(Orientation.VERTICAL);
-//        sc.valueProperty().addListener((ov, old_val, new_val) -> label.setLayoutY(-new_val.doubleValue()));
-//
-//        hBox.getChildren().add(label);
-//        hBox.getChildren().add(sc);
         return scrollPane;
     }
 
@@ -155,7 +136,7 @@ public class Main extends Application {
         }
 
         Text text = new Text(stringBuilder.toString());
-        text.wrappingWidthProperty().bind(primaryStage.widthProperty());
+        text.wrappingWidthProperty().bind(scrollPane.widthProperty());
         scrollPane.setContent(text);
         UpdateGUI();
     }
@@ -163,9 +144,19 @@ public class Main extends Application {
     private void bfsSolution() {
         Algorithms a = new Algorithms(labyrinthElements);
         a.BFS(a.startY, a.startX);
-        for (Point p : a.getPoints()) {
+        List<Point> points = a.getPoints();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Lenght: ").append(points.size()).append("\nRoute:");
+
+        for (Point p : points) {
             labyrinthElements[p.x][p.y] = 4;
+            stringBuilder.append(p.x).append(", ").append(p.y).append(" -> ");
         }
+
+        Text text = new Text(stringBuilder.toString());
+        text.wrappingWidthProperty().bind(scrollPane.widthProperty());
+        scrollPane.setContent(text);
         UpdateGUI();
     }
 
