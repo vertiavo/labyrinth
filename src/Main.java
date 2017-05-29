@@ -1,20 +1,42 @@
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.geometry.Insets;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Point;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main extends Application {
 
@@ -23,6 +45,8 @@ public class Main extends Application {
     Stage primaryStage;
     GridPane grid;
     BorderPane mainLayout;
+    ScrollPane scrollPane;
+
 
     public static void main(String[] args) {
         // write your code here
@@ -44,6 +68,25 @@ public class Main extends Application {
 
         mainLayout.setCenter(setCenterGrid());
         mainLayout.setTop(setTopMenu());
+        mainLayout.setBottom(setBottomLabel());
+    }
+
+    private ScrollPane setBottomLabel() {
+        scrollPane = new ScrollPane();
+        scrollPane.setMaxHeight(150);
+        scrollPane.setFitToWidth(true);
+
+//        label = new Text();
+//        label.setTextAlignment(TextAlignment.CENTER);
+//        label.setWrapText(true);
+//
+//        ScrollBar sc = new ScrollBar();
+//        sc.setOrientation(Orientation.VERTICAL);
+//        sc.valueProperty().addListener((ov, old_val, new_val) -> label.setLayoutY(-new_val.doubleValue()));
+//
+//        hBox.getChildren().add(label);
+//        hBox.getChildren().add(sc);
+        return scrollPane;
     }
 
     private MenuBar setTopMenu() {
@@ -102,9 +145,18 @@ public class Main extends Application {
         Algorithms a = new Algorithms(labyrinthElements);
         a.DFS(a.startY, a.startX);
         List<Point> points = a.getPoints();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Lenght: ").append(points.size()).append("\nRoute:");
+
         for (Point p : points) {
             labyrinthElements[p.x][p.y] = 4;
+            stringBuilder.append(p.x).append(", ").append(p.y).append(" -> ");
         }
+
+        Text text = new Text(stringBuilder.toString());
+        text.wrappingWidthProperty().bind(primaryStage.widthProperty());
+        scrollPane.setContent(text);
         UpdateGUI();
     }
 
