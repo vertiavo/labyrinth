@@ -26,9 +26,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
 
 public class Main extends Application {
 
@@ -145,22 +144,39 @@ public class Main extends Application {
     }
 
     private void bfsSolution() {
-        Algorithms a = new Algorithms(labyrinthElements);
-        a.BFS(a.startY, a.startX);
-        List<Point> points = a.getPoints();
-
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Lenght: ").append(points.size()).append("\nRoute:");
-
-        for (Point p : points) {
-            labyrinthElements[p.x][p.y] = 4;
-            stringBuilder.append(p.x).append(", ").append(p.y).append(" -> ");
+        BfsAlgorithm bfs=new BfsAlgorithm();
+        Vertex start=null;
+        ArrayList<Vertex>list=new ArrayList<Vertex>();
+        for (int i = 0; i < labyrinthElements.length; i++) {
+            for (int j = 0; j < labyrinthElements[i].length; j++) {
+                if(labyrinthElements[i][j]!=1 ){
+                    Vertex v=new Vertex(i,j);
+                    if(labyrinthElements[i][j]==3)v.setEnd(true);
+                    if(labyrinthElements[i][j]==2){
+                        v.setRoot(true);
+                        start=v;
+                    }
+                    list.add(v);
+                }
+            }
         }
-
-        Text text = new Text(stringBuilder.toString());
-        text.wrappingWidthProperty().bind(scrollPane.widthProperty());
-        scrollPane.setContent(text);
-        UpdateGUI();
+        for(int i=0;i<list.size();i++){
+            for(int j=0;j<list.size();j++){
+                if(i!=j){
+                    if(Math.abs(list.get(i).x-list.get(j).x)<=1 && Math.abs(list.get(i).y-list.get(j).y)<=1 &&
+                            !(Math.abs(list.get(i).x-list.get(j).x)==1 && Math.abs(list.get(i).y-list.get(j).y)==1)){
+                        list.get(i).AddNeighour(list.get(j));
+                    }
+                }
+            }
+        }
+        Queue<Vertex>finalTour= bfs.Traverse(start);
+        while(!finalTour.isEmpty()){
+            Vertex x=finalTour.poll();
+            labyrinthElements[x.x][x.y]=4;
+        }
+        // Vertex start=list.contains()
+       UpdateGUI();
     }
 
     private void UpdateGUI() {
