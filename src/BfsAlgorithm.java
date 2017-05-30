@@ -34,7 +34,7 @@ public class BfsAlgorithm {
                 ret.add(doc.EdgeTo.get(0));
                 doc=doc.EdgeTo.get((0));
             }
-            ret.add(root);
+           // ret.add(root);
            // Collections.reverse(Q);
             return ret;
 
