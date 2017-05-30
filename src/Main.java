@@ -171,11 +171,28 @@ public class Main extends Application {
             }
         }
         Queue<Vertex>finalTour= bfs.Traverse(start);
+        List<Vertex> result = new LinkedList<>();
         while(!finalTour.isEmpty()){
             Vertex x=finalTour.poll();
+            result.add(x);
             labyrinthElements[x.x][x.y]=4;
         }
+        Collections.reverse(result);
         // Vertex start=list.contains()
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Lenght: ").append(result.size()).append("\nRoute:");
+
+        for (Vertex p : result) {
+            labyrinthElements[p.x][p.y] = 4;
+            if(result.indexOf(p)==result.size()-1)
+            stringBuilder.append(p.x).append(", ").append(p.y).append(".");
+            else
+            stringBuilder.append(p.x).append(", ").append(p.y).append(" -> ");
+        }
+
+        Text text = new Text(stringBuilder.toString());
+        text.wrappingWidthProperty().bind(scrollPane.widthProperty());
+        scrollPane.setContent(text);
        UpdateGUI();
     }
 
