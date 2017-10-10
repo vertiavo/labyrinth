@@ -146,7 +146,7 @@ public class Main extends Application {
     private void bfsSolution() {
         BfsAlgorithm bfs=new BfsAlgorithm();
         Vertex start=null;
-        ArrayList<Vertex>list=new ArrayList<Vertex>();
+        ArrayList<Vertex>list= new ArrayList<>();
         for (int i = 0; i < labyrinthElements.length; i++) {
             for (int j = 0; j < labyrinthElements[i].length; j++) {
                 if(labyrinthElements[i][j]!=1 ){
@@ -165,12 +165,12 @@ public class Main extends Application {
                 if(i!=j){
                     if(Math.abs(list.get(i).x-list.get(j).x)<=1 && Math.abs(list.get(i).y-list.get(j).y)<=1 &&
                             !(Math.abs(list.get(i).x-list.get(j).x)==1 && Math.abs(list.get(i).y-list.get(j).y)==1)){
-                        list.get(i).AddNeighour(list.get(j));
+                        list.get(i).addNeighour(list.get(j));
                     }
                 }
             }
         }
-        Queue<Vertex>finalTour= bfs.Traverse(start);
+        Queue<Vertex>finalTour= bfs.traverse(start);
         List<Vertex> result = new LinkedList<>();
         while(!finalTour.isEmpty()){
             Vertex x=finalTour.poll();
