@@ -1,4 +1,4 @@
-package com.vertiavo;
+package text;
 import java.nio.charset.Charset;
 
 import com.googlecode.lanterna.TerminalFacade;
