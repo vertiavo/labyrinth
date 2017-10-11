@@ -1,3 +1,8 @@
+package gui;
+
+import algorithms.Algorithms;
+import algorithms.BfsAlgorithm;
+import algorithms.Vertex;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -78,17 +83,17 @@ public class Main extends Application {
         MenuItem load = new MenuItem("Load from file");
         MenuItem save = new MenuItem("Save to file");
         MenuItem exit = new MenuItem("Exit");
-        MenuItem clear=new MenuItem("Clear");
+        MenuItem clear = new MenuItem("Clear");
 
         MenuItem bfs = new MenuItem("BFS");
         MenuItem dfs = new MenuItem("DFS");
 
-        menuFile.getItems().addAll(clear,load, save, exit);
+        menuFile.getItems().addAll(clear, load, save, exit);
         algoFile.getItems().addAll(bfs, dfs);
 
         //obsluga rozwiazania
         dfs.setOnAction(e -> {
-            DfsSolution();
+            dfsSolution();
         });
         bfs.setOnAction(e -> {
             bfsSolution();
@@ -104,7 +109,7 @@ public class Main extends Application {
             UpdateGUI();
         });
         exit.setOnAction(e -> System.exit(0));
-        clear.setOnAction(e->{
+        clear.setOnAction(e -> {
             clearMaze();
         });
         topMenu.getMenus().addAll(menuFile);
@@ -115,7 +120,7 @@ public class Main extends Application {
 
     private void clearMaze() {
         for (int i = 0; i < labyrinthElements.length; i++) {
-              Arrays.fill(labyrinthElements[i],0);
+            Arrays.fill(labyrinthElements[i], 0);
         }
 
         mainLayout.setCenter(null);
@@ -124,7 +129,7 @@ public class Main extends Application {
         mainLayout.setBottom(setBottomLabel());
     }
 
-    private void DfsSolution() {
+    private void dfsSolution() {
         Algorithms a = new Algorithms(labyrinthElements);
         a.DFS(a.startY, a.startX);
         List<Point> points = a.getPoints();
@@ -144,56 +149,56 @@ public class Main extends Application {
     }
 
     private void bfsSolution() {
-        BfsAlgorithm bfs=new BfsAlgorithm();
-        Vertex start=null;
-        ArrayList<Vertex>list= new ArrayList<>();
+        BfsAlgorithm bfs = new BfsAlgorithm();
+        Vertex start = null;
+        ArrayList<Vertex> list = new ArrayList<>();
         for (int i = 0; i < labyrinthElements.length; i++) {
             for (int j = 0; j < labyrinthElements[i].length; j++) {
-                if(labyrinthElements[i][j]!=1 ){
-                    Vertex v=new Vertex(i,j);
-                    if(labyrinthElements[i][j]==3)v.setEnd(true);
-                    if(labyrinthElements[i][j]==2){
+                if (labyrinthElements[i][j] != 1) {
+                    Vertex v = new Vertex(i, j);
+                    if (labyrinthElements[i][j] == 3) v.setEnd(true);
+                    if (labyrinthElements[i][j] == 2) {
                         v.setRoot(true);
-                        start=v;
+                        start = v;
                     }
                     list.add(v);
                 }
             }
         }
-        for(int i=0;i<list.size();i++){
-            for(int j=0;j<list.size();j++){
-                if(i!=j){
-                    if(Math.abs(list.get(i).x-list.get(j).x)<=1 && Math.abs(list.get(i).y-list.get(j).y)<=1 &&
-                            !(Math.abs(list.get(i).x-list.get(j).x)==1 && Math.abs(list.get(i).y-list.get(j).y)==1)){
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.size(); j++) {
+                if (i != j) {
+                    if (Math.abs(list.get(i).getX() - list.get(j).getX()) <= 1 && Math.abs(list.get(i).getY() - list.get(j).getY()) <= 1 &&
+                            !(Math.abs(list.get(i).getX() - list.get(j).getX()) == 1 && Math.abs(list.get(i).getY() - list.get(j).getY()) == 1)) {
                         list.get(i).addNeighour(list.get(j));
                     }
                 }
             }
         }
-        Queue<Vertex>finalTour= bfs.traverse(start);
+        Queue<Vertex> finalTour = bfs.traverse(start);
         List<Vertex> result = new LinkedList<>();
-        while(!finalTour.isEmpty()){
-            Vertex x=finalTour.poll();
-            result.add(x);
-            labyrinthElements[x.x][x.y]=4;
+        while (!finalTour.isEmpty()) {
+            Vertex vertex = finalTour.poll();
+            result.add(vertex);
+            labyrinthElements[vertex.getX()][vertex.getY()] = 4;
         }
         Collections.reverse(result);
-        // Vertex start=list.contains()
+        // algorithms.Vertex start=list.contains()
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Lenght: ").append(result.size()).append("\nRoute:");
 
         for (Vertex p : result) {
-            labyrinthElements[p.x][p.y] = 4;
-            if(result.indexOf(p)==result.size()-1)
-            stringBuilder.append(p.x).append(", ").append(p.y).append(".");
+            labyrinthElements[p.getX()][p.getY()] = 4;
+            if (result.indexOf(p) == result.size() - 1)
+                stringBuilder.append(p.getX()).append(", ").append(p.getY()).append(".");
             else
-            stringBuilder.append(p.x).append(", ").append(p.y).append(" -> ");
+                stringBuilder.append(p.getX()).append(", ").append(p.getY()).append(" -> ");
         }
 
         Text text = new Text(stringBuilder.toString());
         text.wrappingWidthProperty().bind(scrollPane.widthProperty());
         scrollPane.setContent(text);
-       UpdateGUI();
+        UpdateGUI();
     }
 
     private void UpdateGUI() {
@@ -243,7 +248,7 @@ public class Main extends Application {
             output.close();
 
         } catch (IOException ex) {
-             AlertBox.display("Error", "Bład zapisu pliku");
+            AlertBox.display("Error", "Bład zapisu pliku");
         }
 
     }
@@ -269,7 +274,7 @@ public class Main extends Application {
             printLabyrinth();
         } catch (Exception e) {
             //e.printStackTrace();
-            AlertBox.display("Blad","Błąd wczytania pliku");
+            AlertBox.display("Blad", "Błąd wczytania pliku");
             clearMaze();
         }
     }

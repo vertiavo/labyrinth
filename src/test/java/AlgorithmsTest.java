@@ -1,3 +1,4 @@
+import algorithms.Algorithms;
 import org.junit.Test;
 
 /**

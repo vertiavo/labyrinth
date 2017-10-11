@@ -1,8 +1,8 @@
+package algorithms;
+
 import java.util.*;
 
-/**
- * Created by Piotrek on 29/05/2017.
- */
+
 public class BfsAlgorithm {
 
     public Queue<Vertex> traverse(Vertex root) {

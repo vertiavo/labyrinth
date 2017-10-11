@@ -1,32 +1,38 @@
+package algorithms;
+
 import java.util.ArrayList;
 
-/**
- * Created by Piotrek on 29/05/2017.
- */
 public class Vertex {
-    int x;
-    int y;
-    boolean isRoot;
-    boolean isEnd;
+    private int x, y;
+    boolean isRoot, isEnd;
     ArrayList<Vertex> edgeTo;
     public ArrayList<Vertex> neighbours;
 
 
-    public Vertex(int x , int y) {
-
-        this.x=x;
-        this.y=y;
+    public Vertex(int x, int y) {
+        setX(x);
+        setY(y);
         neighbours = new ArrayList<>();
-        isRoot =false;
-        isEnd =false;
+        isRoot = false;
+        isEnd = false;
         edgeTo = new ArrayList<>();
 
     }
-    public void addNeighour(Vertex x){
+
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void addNeighour(Vertex x) {
         neighbours.add(x);
     }
 
-    public void addEdgeTo(Vertex x){
+    public void addEdgeTo(Vertex x) {
         edgeTo.add(x);
     }
 
@@ -46,12 +52,20 @@ public class Vertex {
         return isEnd;
     }
 
-    public boolean hasConnection(Vertex to){
+    public boolean hasConnection(Vertex to) {
         return neighbours.contains(to);
     }
 
     @Override
     public String toString() {
-        return "|"+x+","+y+"| ";
+        return "|" + x + "," + y + "| ";
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 }
