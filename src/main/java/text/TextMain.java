@@ -1,15 +1,14 @@
 package text;
-import java.nio.charset.Charset;
 
 import com.googlecode.lanterna.TerminalFacade;
-import com.googlecode.lanterna.gui.*;
+import com.googlecode.lanterna.gui.Action;
+import com.googlecode.lanterna.gui.Component;
 import com.googlecode.lanterna.gui.Component.Alignment;
-import com.googlecode.lanterna.gui.component.Button;
-import com.googlecode.lanterna.gui.component.EmptySpace;
-import com.googlecode.lanterna.gui.component.Label;
-import com.googlecode.lanterna.gui.component.Panel;
+import com.googlecode.lanterna.gui.GUIScreen;
+import com.googlecode.lanterna.gui.Window;
+import com.googlecode.lanterna.gui.component.*;
 import com.googlecode.lanterna.gui.component.Panel.Orientation;
-import com.googlecode.lanterna.gui.component.Table;
+import com.googlecode.lanterna.gui.dialog.ListSelectDialog;
 import com.googlecode.lanterna.gui.layout.LinearLayout;
 import com.googlecode.lanterna.gui.layout.VerticalLayout;
 import com.googlecode.lanterna.screen.Screen;
@@ -18,36 +17,74 @@ import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.TerminalSize;
 
 public class TextMain {
+
     public static void test1() {
-//final GUIScreen guiScreen = TerminalFacade.createGUIScreen();
-        Terminal terminal = TerminalFacade.createTerminal(Charset.forName("UTF8"));
-        terminal.enterPrivateMode();
-        terminal.moveCursor(10, 10);
-        terminal.putCharacter('W');
-        terminal.putCharacter('i');
-        terminal.putCharacter('t');
-        terminal.putCharacter('a');
-        terminal.putCharacter('m');
-        terminal.putCharacter(' ');
-        terminal.putCharacter('s');
-        terminal.putCharacter('t');
-        terminal.putCharacter('u');
-        terminal.putCharacter('d');
-        terminal.putCharacter('e');
-        terminal.putCharacter('n');
-        terminal.putCharacter('t');
-        terminal.putCharacter('a');
-        terminal.putCharacter('!');
-        terminal.moveCursor(0, 0);
-        Thread.currentThread();
-        while(terminal.readInput()==null){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        final GUIScreen guiScreen = TerminalFacade.createGUIScreen();
+        final Window window = new Window("Labyrinth");
+        window.setWindowSizeOverride(new TerminalSize(100,50));
+        window.setSoloWindow(true);
+
+        Panel panelHolder = new Panel(Orientation.VERTICAL);
+
+        Panel menuPane = new Panel(Orientation.HORISONTAL);
+
+        Button[] fileButtons = new NamedButton[4];
+        fileButtons[0] = new NamedButton("Create");
+        fileButtons[1] = new NamedButton("Load");
+        fileButtons[2] = new NamedButton("Save");
+        fileButtons[3] = new NamedButton("Exit");
+        Button menuFileButton = new Button("File", () -> {
+            ListSelectDialog.showDialog(guiScreen, "File", "Main options", fileButtons);
+        });
+
+        Button[] algorithmButtons = new NamedButton[2];
+        algorithmButtons[0] = new NamedButton("Depth First Search");
+        algorithmButtons[1] = new NamedButton("Breadth First Search");
+        Button menuAlgorithmButton = new Button("Algorithms", () -> {
+            ListSelectDialog.showDialog(guiScreen, "Algorithms", "Choose algorithm", algorithmButtons);
+        });
+
+        menuPane.addComponent(menuFileButton);
+        menuPane.addComponent(menuAlgorithmButton);
+
+        Panel boardPane = new Panel("Board", Orientation.VERTICAL);
+//        Rozwiazanie I - dodatkowy panel na kolumny (poruszanie TYLKO w poziomie)
+//        for (int i = 0; i < 10; i++) {
+//            Panel colBoardPane = new Panel(Orientation.HORISONTAL);
+//            for (int j = 0; j < 10; j++) {
+//                colBoardPane.addComponent(new NamedButton("S"));
+//            }
+//            boardPane.addComponent(colBoardPane);
+//        }
+
+//        Rozwiazanie II - komponent tabeli (poruszanie TYLKO w pionie)
+        Table table = new Table(10);
+        table.setColumnPaddingSize(3);
+
+        for (int i = 0; i < 10; i++) {
+            Button[] buttonRow = new NamedButton[10];
+            for (int j = 0; j < 10; j++) {
+                buttonRow[j] = new NamedButton("S");
             }
+            table.addRow(buttonRow);
         }
-        terminal.exitPrivateMode();
+
+        boardPane.addComponent(table);
+
+        Panel resultPane = new Panel("Results");
+        Label result = new Label("Final results will be displayed here");
+        resultPane.addComponent(result);
+
+        panelHolder.addComponent(menuPane);
+        panelHolder.addComponent(boardPane);
+        panelHolder.addComponent(resultPane);
+
+        window.addComponent(panelHolder);
+        window.addComponent(new EmptySpace());
+
+        guiScreen.getScreen().startScreen();
+        guiScreen.showWindow(window);
+        guiScreen.getScreen().stopScreen();
     }
 
     public static void test2() {
@@ -138,9 +175,9 @@ public class TextMain {
      * @param args
      */
     public static void main(String[] args) {
-//        test1();
-// test2();
-        test3();
+        test1();
+//        test2();
+//        test3();
     }
 
 }
