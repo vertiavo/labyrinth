@@ -40,13 +40,15 @@ public class TextMain {
         fileButtons[2] = new NamedButton("Save");
         fileButtons[3] = new NamedButton("Exit");
         Button menuFileButton = new Button("File", () -> {
-            ListSelectDialog.showDialog(guiScreen, "File", "Main options", fileButtons);
+            Button selected = ListSelectDialog.showDialog(guiScreen, "File", "Main options", fileButtons);
+            if (selected.equals(fileButtons[1])) {
+                String loadFilename = TextInputDialog.showTextInputBox(guiScreen, "Load", null, "What's full name of file?");
+            }
         });
 //chyba ze bedzie w tym menuPane
 //        for (Button b :fileButtons) {
 //            menuPane.addComponent(b);
 //        }
-
 
         Button[] algorithmButtons = new NamedButton[2];
         algorithmButtons[0] = new NamedButton("Depth First Search");
