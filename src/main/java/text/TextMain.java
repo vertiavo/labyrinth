@@ -9,6 +9,7 @@ import com.googlecode.lanterna.gui.Window;
 import com.googlecode.lanterna.gui.component.*;
 import com.googlecode.lanterna.gui.component.Panel.Orientation;
 import com.googlecode.lanterna.gui.dialog.ListSelectDialog;
+import com.googlecode.lanterna.gui.dialog.TextInputDialog;
 import com.googlecode.lanterna.gui.layout.LinearLayout;
 import com.googlecode.lanterna.gui.layout.VerticalLayout;
 import com.googlecode.lanterna.screen.Screen;
@@ -16,12 +17,14 @@ import com.googlecode.lanterna.screen.ScreenCharacterStyle;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.TerminalSize;
 
+import java.io.File;
+
 public class TextMain {
 
     public static void test1() {
         final GUIScreen guiScreen = TerminalFacade.createGUIScreen();
         final Window window = new Window("Labyrinth");
-        window.setWindowSizeOverride(new TerminalSize(100,50));
+        window.setWindowSizeOverride(new TerminalSize(100, 50));
         window.setSoloWindow(true);
 
         Panel panelHolder = new Panel(Orientation.VERTICAL);
@@ -30,12 +33,20 @@ public class TextMain {
 
         Button[] fileButtons = new NamedButton[4];
         fileButtons[0] = new NamedButton("Create");
-        fileButtons[1] = new NamedButton("Load");
+        fileButtons[1] = new NamedButton("Load", () -> {
+            //Ta akcja się nie wykona
+            String loadFilename = TextInputDialog.showTextInputBox(guiScreen, "Load", null, "What's full name of file?");
+        });
         fileButtons[2] = new NamedButton("Save");
         fileButtons[3] = new NamedButton("Exit");
         Button menuFileButton = new Button("File", () -> {
             ListSelectDialog.showDialog(guiScreen, "File", "Main options", fileButtons);
         });
+//chyba ze bedzie w tym menuPane
+//        for (Button b :fileButtons) {
+//            menuPane.addComponent(b);
+//        }
+
 
         Button[] algorithmButtons = new NamedButton[2];
         algorithmButtons[0] = new NamedButton("Depth First Search");
@@ -43,10 +54,8 @@ public class TextMain {
         Button menuAlgorithmButton = new Button("Algorithms", () -> {
             ListSelectDialog.showDialog(guiScreen, "Algorithms", "Choose algorithm", algorithmButtons);
         });
-
         menuPane.addComponent(menuFileButton);
         menuPane.addComponent(menuAlgorithmButton);
-
         Panel boardPane = new Panel("Board", Orientation.VERTICAL);
 //        Rozwiazanie I - dodatkowy panel na kolumny (poruszanie TYLKO w poziomie)
 //        for (int i = 0; i < 10; i++) {
@@ -57,7 +66,7 @@ public class TextMain {
 //            boardPane.addComponent(colBoardPane);
 //        }
 
-//        Rozwiazanie II - komponent tabeli (poruszanie TYLKO w pionie)
+//         Rozwiazanie II - komponent tabeli (poruszanie TYLKO w pionie)
         Table table = new Table(10);
         table.setColumnPaddingSize(3);
 
@@ -85,6 +94,7 @@ public class TextMain {
         guiScreen.getScreen().startScreen();
         guiScreen.showWindow(window);
         guiScreen.getScreen().stopScreen();
+
     }
 
     public static void test2() {
@@ -95,7 +105,7 @@ public class TextMain {
 //false, false, false);
         screen.refresh();
         Thread.currentThread();
-        while(screen.readInput()==null){
+        while (screen.readInput() == null) {
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
@@ -108,10 +118,10 @@ public class TextMain {
     public static void test3() {
         final GUIScreen guiScreen = TerminalFacade.createGUIScreen();
         final Window window = new Window("Sample window");
-        window.setWindowSizeOverride(new TerminalSize(100,50));
+        window.setWindowSizeOverride(new TerminalSize(100, 50));
         window.setSoloWindow(true);
 
-        Panel panelHolder = new Panel("Holder panel",Orientation.VERTICAL);
+        Panel panelHolder = new Panel("Holder panel", Orientation.VERTICAL);
 
         Panel panel = new Panel("Panel with a right-aligned button");
 
@@ -145,7 +155,7 @@ public class TextMain {
 
             public void doAction() {
 
-                newWindow.setWindowSizeOverride(new TerminalSize(130,50));
+                newWindow.setWindowSizeOverride(new TerminalSize(130, 50));
                 newWindow.setSoloWindow(true);
 
                 Button exitBtn = new Button("Exit", new Action() {
@@ -171,13 +181,22 @@ public class TextMain {
         guiScreen.showWindow(window);
         guiScreen.getScreen().stopScreen();
     }
+
     /**
      * @param args
      */
     public static void main(String[] args) {
         test1();
 //        test2();
-//        test3();
+// test3();
     }
 
+    //na to nie patrz :D
+    public File load(String text) {
+        return null;
+    }
+
+    private void save() {
+
+    }
 }
