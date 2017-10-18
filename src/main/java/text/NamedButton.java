@@ -2,20 +2,19 @@ package text;
 
 import com.googlecode.lanterna.gui2.Button;
 
-import javax.swing.*;
-
 public class NamedButton extends Button {
 
-    private String text;
+    public NamedButton(String label) {
+        super(label);
+    }
 
-    public NamedButton(String text) {
-        super(text);
-        this.text = text;
+    public NamedButton(String label, Runnable action) {
+        super(label, action);
     }
 
     @Override
     public String toString() {
-        return text;
+        return super.getLabel();
     }
 
 }

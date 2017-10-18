@@ -19,7 +19,8 @@ public class TextMain3 {
         screen.startScreen();
 
         // use GUI here until the GUI wants to exit
-        MainWindow mainWindow = new MainWindow();
+        MainWindow mainWindow = new MainWindow(gui);
+        mainWindow.makeGUI();
         gui.addWindow(mainWindow);
         mainWindow.waitUntilClosed();
 
