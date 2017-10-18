@@ -1,5 +1,5 @@
 package text;
-
+/*
 import com.googlecode.lanterna.TerminalFacade;
 import com.googlecode.lanterna.gui.Action;
 import com.googlecode.lanterna.gui.Component;
@@ -16,11 +16,11 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.screen.ScreenCharacterStyle;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.TerminalSize;
-
+*/
 import java.io.File;
 
 public class TextMain {
-
+/*
     public static void test1() {
         final GUIScreen guiScreen = TerminalFacade.createGUIScreen();
         final Window window = new Window("Labyrinth");
@@ -183,12 +183,12 @@ public class TextMain {
         guiScreen.showWindow(window);
         guiScreen.getScreen().stopScreen();
     }
-
+*/
     /**
      * @param args
      */
     public static void main(String[] args) {
-        test1();
+//        test1();
 //        test2();
 // test3();
     }
