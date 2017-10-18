@@ -7,10 +7,14 @@ import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
 public class MainWindow extends BasicWindow {
 
     private WindowBasedTextGUI guiScreen;
+    private boolean startExists;
+    private boolean finishExists;
 
     public MainWindow(WindowBasedTextGUI guiScreen) {
         super("Labyrinth");
         this.guiScreen = guiScreen;
+        this.startExists = false;
+        this.finishExists = false;
     }
 
     public void makeGUI() {
@@ -35,6 +39,14 @@ public class MainWindow extends BasicWindow {
                     cleanBoard(gridPanel);
                 } else if (selected.equals(fileButtons[1])) {
                     String loadFilename = TextInputDialog.showDialog(guiScreen, "Load", "What's full name of file?", "");
+//                    TODO
+//                    loadFile(loadFilename);
+                } else if (selected.equals(fileButtons[2])) {
+                    String saveFilename = TextInputDialog.showDialog(guiScreen, "Save", "Insert file name.", "");
+//                    TODO
+//                    saveFile(saveFilename);
+                } else {
+                    System.exit(1);
                 }
             }
         });
@@ -43,7 +55,16 @@ public class MainWindow extends BasicWindow {
         algorithmButtons[0] = new NamedButton("Depth First Search");
         algorithmButtons[1] = new NamedButton("Breadth First Search");
         Button menuAlgorithmButton = new Button("Algorithms", () -> {
-            ListSelectDialog.showDialog(guiScreen, "Algorithms", "Choose algorithm", algorithmButtons);
+            Button selected = ListSelectDialog.showDialog(guiScreen, "Algorithms", "Choose algorithm", algorithmButtons);
+            if (selected != null) {
+                if (selected.equals(algorithmButtons[0])) {
+//                    TODO
+//                Wywolanie algorytm DFS
+                } else if (selected.equals(algorithmButtons[1])) {
+//                    TODO
+//                Wywolanie algorytmu BFS
+                }
+            }
         });
         menuPanel.addComponent(menuFileButton);
         menuPanel.addComponent(menuAlgorithmButton);
@@ -54,10 +75,27 @@ public class MainWindow extends BasicWindow {
         gridPanel.setLayoutManager(board);
 
         for (int i = 0; i < 100; i++) {
-            NamedButton button = new NamedButton("S");
+            NamedButton button = new NamedButton("N");
             button.addListener(button1 -> {
                 NamedButton b = (NamedButton) button1;
-                b.setLabel("K");
+                switch(b.getLabel()) {
+                    case "N":
+                        if (checkStart()) {
+                            b.setLabel("S");
+                            break;
+                        }
+                    case "S":
+                        if (checkFinish()) {
+                            b.setLabel("F");
+                            break;
+                        }
+                    case "F":
+                        b.setLabel("W");
+                        break;
+                    case "W":
+                        b.setLabel("N");
+                        break;
+                }
             });
             gridPanel.addComponent(button);
         }
@@ -72,9 +110,30 @@ public class MainWindow extends BasicWindow {
     }
 
     private void cleanBoard(Panel gridPanel) {
+        startExists = false;
+        finishExists = false;
         for (Component component : gridPanel.getChildren()) {
             NamedButton button = (NamedButton) component;
-            button.setLabel("S");
+            button.setLabel("N");
         }
     }
+
+    private boolean checkStart() {
+        if (startExists) {
+            return false;
+        } else {
+            startExists = true;
+            return true;
+        }
+    }
+
+    private boolean checkFinish() {
+        if (finishExists) {
+            return false;
+        } else {
+            finishExists = true;
+            return true;
+        }
+    }
+
 }
