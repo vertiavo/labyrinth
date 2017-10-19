@@ -8,6 +8,8 @@ public class MainWindow extends BasicWindow {
 
     private WindowBasedTextGUI guiScreen;
     private boolean startExists;
+    private Button startButton;
+    private Button finishButton;
     private boolean finishExists;
 
     public MainWindow(WindowBasedTextGUI guiScreen) {
@@ -15,6 +17,8 @@ public class MainWindow extends BasicWindow {
         this.guiScreen = guiScreen;
         this.startExists = false;
         this.finishExists = false;
+        this.startButton = null;
+        this.finishButton = null;
     }
 
     public void makeGUI() {
@@ -81,15 +85,23 @@ public class MainWindow extends BasicWindow {
                 switch(b.getLabel()) {
                     case "N":
                         if (checkStart()) {
+                            startButton = b;
                             b.setLabel("S");
                             break;
                         }
                     case "S":
+                        if (b == startButton) {
+                            disableStart();
+                        }
                         if (checkFinish()) {
+                            finishButton = b;
                             b.setLabel("F");
                             break;
                         }
                     case "F":
+                        if (b == finishButton) {
+                            disableFinish();
+                        }
                         b.setLabel("W");
                         break;
                     case "W":
@@ -127,6 +139,11 @@ public class MainWindow extends BasicWindow {
         }
     }
 
+    private void disableStart() {
+        startExists = false;
+        startButton = null;
+    }
+
     private boolean checkFinish() {
         if (finishExists) {
             return false;
@@ -134,6 +151,11 @@ public class MainWindow extends BasicWindow {
             finishExists = true;
             return true;
         }
+    }
+
+    private void disableFinish() {
+        finishExists = false;
+        finishButton = null;
     }
 
 }
