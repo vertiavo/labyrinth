@@ -1,8 +1,23 @@
 package text;
 
+import algorithms.Algorithms;
+import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.graphics.PropertyTheme;
+import com.googlecode.lanterna.graphics.SimpleTheme;
+import com.googlecode.lanterna.graphics.Theme;
 import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.Button;
+import com.googlecode.lanterna.gui2.Component;
+import com.googlecode.lanterna.gui2.GridLayout;
+import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.dialogs.ListSelectDialog;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 public class MainWindow extends BasicWindow {
 
@@ -11,14 +26,16 @@ public class MainWindow extends BasicWindow {
     private Button startButton;
     private Button finishButton;
     private boolean finishExists;
+    List<NamedButton> buttons;
 
     public MainWindow(WindowBasedTextGUI guiScreen) {
         super("Labyrinth");
         this.guiScreen = guiScreen;
-        this.startExists = false;
-        this.finishExists = false;
-        this.startButton = null;
-        this.finishButton = null;
+        startExists = false;
+        finishExists = false;
+        startButton = null;
+        finishButton = null;
+        buttons = new ArrayList<>();
     }
 
     public void makeGUI() {
@@ -62,8 +79,7 @@ public class MainWindow extends BasicWindow {
             Button selected = ListSelectDialog.showDialog(guiScreen, "Algorithms", "Choose algorithm", algorithmButtons);
             if (selected != null) {
                 if (selected.equals(algorithmButtons[0])) {
-//                    TODO
-//                Wywolanie algorytm DFS
+                    runDfs();
                 } else if (selected.equals(algorithmButtons[1])) {
 //                    TODO
 //                Wywolanie algorytmu BFS
@@ -109,6 +125,7 @@ public class MainWindow extends BasicWindow {
                         break;
                 }
             });
+            buttons.add(button);
             gridPanel.addComponent(button);
         }
 
@@ -156,6 +173,62 @@ public class MainWindow extends BasicWindow {
     private void disableFinish() {
         finishExists = false;
         finishButton = null;
+    }
+
+    private int[][] buildLabyrinthTable() {
+        int[][] array = new int[10][10];
+
+        for (int[] anArray : array) {
+            Arrays.fill(anArray, 0);
+        }
+
+        if (buttons.size() < 100) {
+            throw new IllegalArgumentException("Not enough buttons");
+        }
+
+        Iterator<NamedButton> iterator = buttons.iterator();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                NamedButton button = iterator.next();
+                switch (button.getLabel()) {
+                    case "N": array[i][j] = 0; break;
+                    case "S": array[i][j] = 2; break;
+                    case "F": array[i][j] = 3; break;
+                    case "W": array[i][j] = 1; break;
+                }
+            }
+        }
+
+        return array;
+    }
+
+    private void runDfs() {
+        int[][] labyrinthTable = buildLabyrinthTable();
+        Algorithms a = new Algorithms(labyrinthTable);
+        a.DFS(a.startY, a.startX);
+        List<Point> points = a.getPoints();
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Lenght: ").append(points.size()).append("\nRoute:");
+
+        for (Point p : points) {
+//            labyrinthTable[p.x][p.y] = 4;
+            stringBuilder.append(p.x).append(", ").append(p.y).append(" -> ");
+        }
+
+        drawRoute(points);
+
+        System.out.println(stringBuilder.toString());
+    }
+
+    private void runBfs() {
+
+    }
+
+    private void drawRoute(List<Point> points) {
+        for (Point p : points) {
+            buttons.get(p.x * 10 + p.y).setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255,0,0), SGR.BOLD));
+        }
     }
 
 }
