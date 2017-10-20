@@ -65,6 +65,7 @@ public class MainWindow extends BasicWindow {
         fileButtons[3] = new NamedButton("Exit");
 
         Button menuFileButton = new Button("File", () -> {
+
             Button selected = ListSelectDialog.showDialog(guiScreen, "File", "Main options", fileButtons);
             if (selected != null) {
                 if (selected.equals(fileButtons[0])) {
@@ -84,7 +85,9 @@ public class MainWindow extends BasicWindow {
         Button[] algorithmButtons = new NamedButton[2];
         algorithmButtons[0] = new NamedButton("Depth First Search");
         algorithmButtons[1] = new NamedButton("Breadth First Search");
+
         Button menuAlgorithmButton = new Button("Algorithms", () -> {
+
             Button selected = ListSelectDialog.showDialog(guiScreen, "Algorithms", "Choose algorithm", algorithmButtons);
             if (selected != null) {
                 if (selected.equals(algorithmButtons[0])) {
@@ -94,6 +97,7 @@ public class MainWindow extends BasicWindow {
                 }
             }
         });
+
         menuPanel.addComponent(menuFileButton);
         menuPanel.addComponent(menuAlgorithmButton);
         contentPanel.addComponent(menuPanel);
@@ -158,6 +162,7 @@ public class MainWindow extends BasicWindow {
         startExists = false;
         finishExists = false;
         label.setText("The results will be shown there.");
+
         for (Component component : gridPanel.getChildren()) {
             NamedButton button = (NamedButton) component;
             button.setLabel("N");
@@ -340,6 +345,7 @@ public class MainWindow extends BasicWindow {
         File loadFile = loadInterface.showDialog(guiScreen);
 
         try(BufferedReader reader = Files.newBufferedReader(Paths.get(loadFile.getPath()))) {
+
             String line;
             Iterator<NamedButton> iterator = buttons.iterator();
             while((line = reader.readLine()) != null) {
