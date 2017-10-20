@@ -104,6 +104,7 @@ public class MainWindow extends BasicWindow {
 
         GridLayout board = new GridLayout(10);
         gridPanel.setLayoutManager(board);
+        board.setVerticalSpacing(2);
 
         for (int i = 0; i < 100; i++) {
             NamedButton button = new NamedButton("N");
