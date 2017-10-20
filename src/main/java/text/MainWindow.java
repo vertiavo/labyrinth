@@ -4,6 +4,7 @@ import algorithms.Algorithms;
 import algorithms.BfsAlgorithm;
 import algorithms.Vertex;
 import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.SimpleTheme;
 import com.googlecode.lanterna.gui2.*;
@@ -12,11 +13,16 @@ import com.googlecode.lanterna.gui2.Component;
 import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
+import com.googlecode.lanterna.gui2.dialogs.FileDialog;
 import com.googlecode.lanterna.gui2.dialogs.ListSelectDialog;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.Queue;
@@ -65,9 +71,8 @@ public class MainWindow extends BasicWindow {
                 if (selected.equals(fileButtons[0])) {
                     cleanBoard(gridPanel);
                 } else if (selected.equals(fileButtons[1])) {
-                    String loadFilename = TextInputDialog.showDialog(guiScreen, "Load", "What's full name of file?", "");
-//                    TODO
-//                    loadFile(loadFilename);
+                    loadFile();
+//                    String loadFilename = TextInputDialog.showDialog(guiScreen, "Load", "What's full name of file?", "");
                 } else if (selected.equals(fileButtons[2])) {
                     String saveFilename = TextInputDialog.showDialog(guiScreen, "Save", "Insert file name.", "");
 //                    TODO
@@ -109,20 +114,24 @@ public class MainWindow extends BasicWindow {
                         if (checkStart()) {
                             startButton = b;
                             b.setLabel("S");
+                            b.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 255, 0), SGR.BOLD));
                             break;
                         }
                     case "S":
                         if (b == startButton) {
                             disableStart();
+                            b.setTheme(new Button("").getTheme());
                         }
                         if (checkFinish()) {
                             finishButton = b;
                             b.setLabel("F");
+                            b.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 255), SGR.BOLD));
                             break;
                         }
                     case "F":
                         if (b == finishButton) {
                             disableFinish();
+                            b.setTheme(new Button("").getTheme());
                         }
                         b.setLabel("W");
                         break;
@@ -289,11 +298,25 @@ public class MainWindow extends BasicWindow {
         try {
             if (points.get(0) instanceof Point) {
                 for (Point p : (List<Point>) (points)) {
-                    buttons.get(p.x * 10 + p.y).setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255, 0, 0), SGR.BOLD));
+                    Button currentButton = buttons.get(p.x * 10 + p.y);
+                    if (currentButton.equals(startButton)) {
+                        currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 255, 0), SGR.BOLD));
+                    } else if (currentButton.equals(finishButton)) {
+                        currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 255), SGR.BOLD));
+                    } else {
+                        currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255, 0, 0), SGR.BOLD));
+                    }
                 }
             } else {
                 for (Vertex v : (List<Vertex>) (points)) {
-                    buttons.get(v.getX() * 10 + v.getY()).setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255, 0, 0), SGR.BOLD));
+                    Button currentButton = buttons.get(v.getX() * 10 + v.getY());
+                    if (currentButton.equals(startButton)) {
+                        currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 255, 0), SGR.BOLD));
+                    } else if (currentButton.equals(finishButton)) {
+                        currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 255), SGR.BOLD));
+                    } else {
+                        currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255, 0, 0), SGR.BOLD));
+                    }
                 }
             }
         } catch (ClassCastException e) {
@@ -305,6 +328,54 @@ public class MainWindow extends BasicWindow {
 
     private void printResult(String s) {
         label.setText(s);
+    }
+
+    private void loadFile() {
+        String pathToExampleFolder = "/run/media/vertiavo/Marek/IdeaProjects/labyrinth-kck/labyrinth/src/main/resources/Examples";
+        File defaultExampleFile = new File(pathToExampleFolder);
+        com.googlecode.lanterna.gui2.dialogs.FileDialog loadInterface = new FileDialog(
+                "Load file",
+                "Choose a file with labyrinth to load",
+                "Open", new TerminalSize(15, 5),
+                false,
+                defaultExampleFile);
+        File loadFile = loadInterface.showDialog(guiScreen);
+
+        try(BufferedReader reader = Files.newBufferedReader(Paths.get(loadFile.getPath()))) {
+            String line;
+            Iterator<NamedButton> iterator = buttons.iterator();
+            while((line = reader.readLine()) != null) {
+                String[] parts = line.split(" ");
+                if (parts.length > 10) {
+                    throw new IllegalArgumentException("Labyrinth file should contain 10x10 dimension array.");
+                }
+                for (String s : parts) {
+                    NamedButton button = iterator.next();
+                    switch (Integer.valueOf(s)) {
+                        case 0:
+                            button.setLabel("N");
+                            break;
+                        case 2:
+                            button.setLabel("S");
+                            button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 255, 0), SGR.BOLD));
+                            startExists = true;
+                            startButton = button;
+                            break;
+                        case 3:
+                            button.setLabel("F");
+                            button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 255), SGR.BOLD));
+                            finishExists = true;
+                            finishButton = button;
+                            break;
+                        case 1:
+                            button.setLabel("W");
+                            break;
+                    }
+                }
+            }
+        } catch(Exception e) {
+            System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
+        }
     }
 
 }
