@@ -19,8 +19,7 @@ import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.File;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -74,9 +73,8 @@ public class MainWindow extends BasicWindow {
                     loadFile();
 //                    String loadFilename = TextInputDialog.showDialog(guiScreen, "Load", "What's full name of file?", "");
                 } else if (selected.equals(fileButtons[2])) {
-                    String saveFilename = TextInputDialog.showDialog(guiScreen, "Save", "Insert file name.", "");
-//                    TODO
-//                    saveFile(saveFilename);
+                    saveFile();
+//                    String saveFilename = TextInputDialog.showDialog(guiScreen, "Save", "Insert file name.", "");
                 } else {
                     System.exit(1);
                 }
@@ -375,6 +373,41 @@ public class MainWindow extends BasicWindow {
             }
         } catch(Exception e) {
             System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
+        }
+    }
+
+    private void saveFile() {
+        String pathToExampleFolder = "/run/media/vertiavo/Marek/IdeaProjects/labyrinth-kck/labyrinth/src/main/resources/Examples";
+        File defaultExampleFile = new File(pathToExampleFolder);
+        com.googlecode.lanterna.gui2.dialogs.FileDialog saveInterface = new FileDialog(
+                "Save file",
+                "Choose a path to save current labyrinth",
+                "Save", new TerminalSize(15, 5),
+                false,
+                defaultExampleFile);
+        File saveFile = saveInterface.showDialog(guiScreen);
+
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                new FileOutputStream(saveFile.getPath()), "utf-8"))) {
+            StringBuilder builder = new StringBuilder();
+
+            Iterator<NamedButton> iterator = buttons.iterator();
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    NamedButton button = iterator.next();
+                    switch (button.getLabel()) {
+                        case "N": builder.append(0).append(" "); break;
+                        case "S": builder.append(2).append(" "); break;
+                        case "F": builder.append(3).append(" "); break;
+                        case "W": builder.append(1).append(" "); break;
+                    }
+                }
+                builder.append("\n");
+            }
+
+            writer.write(builder.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
