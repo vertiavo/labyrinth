@@ -11,6 +11,7 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.Button;
 import com.googlecode.lanterna.gui2.Component;
 import com.googlecode.lanterna.gui2.GridLayout;
+import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.dialogs.ListSelectDialog;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
@@ -22,15 +23,17 @@ import java.util.List;
 public class MainWindow extends BasicWindow {
 
     private WindowBasedTextGUI guiScreen;
+    private Label label;
     private boolean startExists;
     private Button startButton;
     private Button finishButton;
     private boolean finishExists;
-    List<NamedButton> buttons;
+    private List<NamedButton> buttons;
 
     public MainWindow(WindowBasedTextGUI guiScreen) {
         super("Labyrinth");
         this.guiScreen = guiScreen;
+        label = new Label("The results will be shown there.");
         startExists = false;
         finishExists = false;
         startButton = null;
@@ -47,6 +50,7 @@ public class MainWindow extends BasicWindow {
         Panel resultPanel = new Panel(new LinearLayout(Direction.VERTICAL));
 
         // ************* MENU PANEL *****************************************
+
         Button[] fileButtons = new NamedButton[4];
         fileButtons[0] = new NamedButton("Clean");
         fileButtons[1] = new NamedButton("Load");
@@ -81,8 +85,7 @@ public class MainWindow extends BasicWindow {
                 if (selected.equals(algorithmButtons[0])) {
                     runDfs();
                 } else if (selected.equals(algorithmButtons[1])) {
-//                    TODO
-//                Wywolanie algorytmu BFS
+                    runBfs();
                 }
             }
         });
@@ -91,6 +94,7 @@ public class MainWindow extends BasicWindow {
         contentPanel.addComponent(menuPanel);
 
         // ************* GRID PANEL *****************************************
+
         GridLayout board = new GridLayout(10);
         gridPanel.setLayoutManager(board);
 
@@ -131,7 +135,10 @@ public class MainWindow extends BasicWindow {
 
         contentPanel.addComponent(gridPanel);
 
-        // ************* GRID PANEL *****************************************
+        // ************* RESULT PANEL *****************************************
+
+        label.setLabelWidth(guiScreen.getScreen().getTerminalSize().getColumns());
+        resultPanel.addComponent(label);
         contentPanel.addComponent(resultPanel);
 
         // This ultimately links in the panels as the window content
@@ -141,9 +148,11 @@ public class MainWindow extends BasicWindow {
     private void cleanBoard(Panel gridPanel) {
         startExists = false;
         finishExists = false;
+        label.setText("The results will be shown there.");
         for (Component component : gridPanel.getChildren()) {
             NamedButton button = (NamedButton) component;
             button.setLabel("N");
+            button.setTheme(new Button("").getTheme());
         }
     }
 
@@ -212,11 +221,11 @@ public class MainWindow extends BasicWindow {
         stringBuilder.append("Lenght: ").append(points.size()).append("\nRoute:");
 
         for (Point p : points) {
-//            labyrinthTable[p.x][p.y] = 4;
             stringBuilder.append(p.x).append(", ").append(p.y).append(" -> ");
         }
 
         drawRoute(points);
+        printResult(stringBuilder.toString());
 
         System.out.println(stringBuilder.toString());
     }
@@ -229,6 +238,10 @@ public class MainWindow extends BasicWindow {
         for (Point p : points) {
             buttons.get(p.x * 10 + p.y).setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255,0,0), SGR.BOLD));
         }
+    }
+
+    private void printResult(String s) {
+        label.setText(s);
     }
 
 }
