@@ -1,12 +1,11 @@
 package text;
 
 import algorithms.Algorithms;
+import algorithms.BfsAlgorithm;
+import algorithms.Vertex;
 import com.googlecode.lanterna.SGR;
-import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.graphics.PropertyTheme;
 import com.googlecode.lanterna.graphics.SimpleTheme;
-import com.googlecode.lanterna.graphics.Theme;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.Button;
 import com.googlecode.lanterna.gui2.Component;
@@ -15,11 +14,14 @@ import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.dialogs.ListSelectDialog;
 import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.awt.*;
 import java.util.*;
 import java.util.List;
+import java.util.Queue;
 
+@SuppressWarnings("Duplicates")
 public class MainWindow extends BasicWindow {
 
     private WindowBasedTextGUI guiScreen;
@@ -231,12 +233,73 @@ public class MainWindow extends BasicWindow {
     }
 
     private void runBfs() {
+        int[][] labyrinthTable = buildLabyrinthTable();
+        BfsAlgorithm bfs = new BfsAlgorithm();
+        Vertex start = null;
+        ArrayList<Vertex> list = new ArrayList<>();
+        for (int i = 0; i < labyrinthTable.length; i++) {
+            for (int j = 0; j < labyrinthTable[i].length; j++) {
+                if (labyrinthTable[i][j] != 1) {
+                    Vertex v = new Vertex(i, j);
+                    if (labyrinthTable[i][j] == 3) v.setEnd(true);
+                    if (labyrinthTable[i][j] == 2) {
+                        v.setRoot(true);
+                        start = v;
+                    }
+                    list.add(v);
+                }
+            }
+        }
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 0; j < list.size(); j++) {
+                if (i != j) {
+                    if (Math.abs(list.get(i).getX() - list.get(j).getX()) <= 1 && Math.abs(list.get(i).getY() - list.get(j).getY()) <= 1 &&
+                            !(Math.abs(list.get(i).getX() - list.get(j).getX()) == 1 && Math.abs(list.get(i).getY() - list.get(j).getY()) == 1)) {
+                        list.get(i).addNeighour(list.get(j));
+                    }
+                }
+            }
+        }
+        Queue<Vertex> finalTour = bfs.traverse(start);
+        List<Vertex> result = new LinkedList<>();
+        while (!finalTour.isEmpty()) {
+            Vertex vertex = finalTour.poll();
+            result.add(vertex);
+            labyrinthTable[vertex.getX()][vertex.getY()] = 4;
+        }
+        Collections.reverse(result);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Lenght: ").append(result.size()).append("\nRoute:");
+
+        for (Vertex p : result) {
+            if (result.indexOf(p) == result.size() - 1)
+                stringBuilder.append(p.getX()).append(", ").append(p.getY()).append(".");
+            else
+                stringBuilder.append(p.getX()).append(", ").append(p.getY()).append(" -> ");
+        }
+
+        drawRoute(result);
+        printResult(stringBuilder.toString());
+
+        System.out.println(stringBuilder.toString());
 
     }
 
-    private void drawRoute(List<Point> points) {
-        for (Point p : points) {
-            buttons.get(p.x * 10 + p.y).setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255,0,0), SGR.BOLD));
+    private void drawRoute(List<?> points) {
+        try {
+            if (points.get(0) instanceof Point) {
+                for (Point p : (List<Point>) (points)) {
+                    buttons.get(p.x * 10 + p.y).setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255, 0, 0), SGR.BOLD));
+                }
+            } else {
+                for (Vertex v : (List<Vertex>) (points)) {
+                    buttons.get(v.getX() * 10 + v.getY()).setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255, 0, 0), SGR.BOLD));
+                }
+            }
+        } catch (ClassCastException e) {
+            label.setText("Error occured, application needs to be restarted.");
+            e.printStackTrace();
+            System.exit(0);
         }
     }
 

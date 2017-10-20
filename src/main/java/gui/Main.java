@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
+@SuppressWarnings("Duplicates")
 public class Main extends Application {
 
     int[][] labyrinthElements;
