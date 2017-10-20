@@ -15,8 +15,6 @@ import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.dialogs.FileDialog;
 import com.googlecode.lanterna.gui2.dialogs.ListSelectDialog;
-import com.googlecode.lanterna.gui2.dialogs.TextInputDialog;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.awt.*;
 import java.io.*;
@@ -226,6 +224,8 @@ public class MainWindow extends BasicWindow {
     }
 
     private void runDfs() {
+        cleanRoute();
+
         int[][] labyrinthTable = buildLabyrinthTable();
         Algorithms a = new Algorithms(labyrinthTable);
         a.DFS(a.startY, a.startX);
@@ -245,6 +245,8 @@ public class MainWindow extends BasicWindow {
     }
 
     private void runBfs() {
+        cleanRoute();
+
         int[][] labyrinthTable = buildLabyrinthTable();
         BfsAlgorithm bfs = new BfsAlgorithm();
         Vertex start = null;
@@ -307,6 +309,7 @@ public class MainWindow extends BasicWindow {
                     } else if (currentButton.equals(finishButton)) {
                         currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 255), SGR.BOLD));
                     } else {
+                        currentButton.setLabel("R");
                         currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255, 0, 0), SGR.BOLD));
                     }
                 }
@@ -318,6 +321,7 @@ public class MainWindow extends BasicWindow {
                     } else if (currentButton.equals(finishButton)) {
                         currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 255), SGR.BOLD));
                     } else {
+                        currentButton.setLabel("R");
                         currentButton.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(255, 0, 0), SGR.BOLD));
                     }
                 }
@@ -326,6 +330,15 @@ public class MainWindow extends BasicWindow {
             label.setText("Error occured, application needs to be restarted.");
             e.printStackTrace();
             System.exit(0);
+        }
+    }
+
+    private void cleanRoute() {
+        for (Button b : buttons) {
+            if (b.getLabel().equals("R")) {
+                b.setLabel("N");
+                b.setTheme(new Button("").getTheme());
+            }
         }
     }
 
