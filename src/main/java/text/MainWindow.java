@@ -28,6 +28,22 @@ import java.util.Queue;
 @SuppressWarnings("Duplicates")
 public class MainWindow extends BasicWindow {
 
+    private static final String EXAMPLE_PATH = "src/main/resources/Examples";
+    private static final String WRONG_SIZE_ARRAY_EXCEPTION = "Labyrinth file should contain 10x10 dimension array.";
+    private static final String HOW_TO_MESSAGE = "I CREATE\n" +
+            "\tRead legend and build a new labyrinth with buttons. \n" +
+            "<b>II Load</b>\n" +
+            "\tIn the File panel choose 'Load' option and find .txt file\n" +
+            "with coded labyrinth (10x10 dimension) as shown in legend.\n" +
+            "III Running algorithm\n" +
+            "\tChoose desired algorithm. After finishing, the result will \n" +
+            "be shown on buttons in grid panel and below them, in the label.\n" +
+            "IV Cleaning\n" +
+            "\tIf you want to clean up a road built by algorithm - choose \n" +
+            "'Clean route' in the Algorithms panel, otherwise if you want \n" +
+            "to completely reset labyrinth - choose 'Clean' option located \n" +
+            "in the File panel.";
+
     private WindowBasedTextGUI guiScreen;
     private Label label;
     private boolean startExists;
@@ -71,10 +87,8 @@ public class MainWindow extends BasicWindow {
                     cleanBoard(gridPanel);
                 } else if (selected.equals(fileButtons[1])) {
                     loadFile();
-//                    String loadFilename = TextInputDialog.showDialog(guiScreen, "Load", "What's full name of file?", "");
                 } else if (selected.equals(fileButtons[2])) {
                     saveFile();
-//                    String saveFilename = TextInputDialog.showDialog(guiScreen, "Save", "Insert file name.", "");
                 } else {
                     System.exit(1);
                 }
@@ -85,21 +99,24 @@ public class MainWindow extends BasicWindow {
         algorithmButtons[0] = new NamedButton("Depth First Search");
         algorithmButtons[1] = new NamedButton("Breadth First Search");
         algorithmButtons[2] = new NamedButton("Clean route");
+
         Button menuAlgorithmButton = new Button("Algorithms", () -> {
 
             Button selected = ListSelectDialog.showDialog(guiScreen, "Algorithms", "Choose algorithm", algorithmButtons);
             if (selected != null) {
+                final String errorTitle = "Labyrinth is empty";
+                final String errorMessage = "Please check if your labyrinth has start and end";
                 if (selected.equals(algorithmButtons[0])) {
                     try {
                         runDfs();
                     } catch (Exception e) {
-                        MessageDialog.showMessageDialog(guiScreen, "Labirynth is empty", "Please check if your labirynth has start and end");
+                        showMessageDialog(errorTitle, errorMessage);
                     }
                 } else if (selected.equals(algorithmButtons[1])) {
                     try {
                         runBfs();
                     } catch (Exception e) {
-                        MessageDialog.showMessageDialog(guiScreen, "Labirynth is empty", "Please check if your labirynth has start and end");
+                        showMessageDialog(errorTitle, errorMessage);
                     }
                 } else if (selected.equals(algorithmButtons[2])) {
                     cleanRoute();
@@ -107,8 +124,28 @@ public class MainWindow extends BasicWindow {
             }
         });
 
+        Button[] helpButtons = new NamedButton[3];
+        helpButtons[0] = new NamedButton("Instructions");
+        helpButtons[1] = new NamedButton("Button legend");
+        helpButtons[2] = new NamedButton("About");
+
+        Button menuHelpButton = new Button("Help", () -> {
+
+            Button selected = ListSelectDialog.showDialog(guiScreen, "Help", null, helpButtons);
+            if (selected != null) {
+                if (selected.equals(helpButtons[0])) {
+                    showMessageDialog("How to use", HOW_TO_MESSAGE);
+                } else if (selected.equals(helpButtons[1])) {
+                    showMessageDialog("Button legend", "N - Nothing, \nS - Start, \nF - Finish, \nW - Wall, \nR - Road");
+                } else {
+                    showMessageDialog("About", "Labyrinth \u00A9 2017 \nMarek Jakubowski & Piotr Otapowicz");
+                }
+            }
+        });
+
         menuPanel.addComponent(menuFileButton);
         menuPanel.addComponent(menuAlgorithmButton);
+        menuPanel.addComponent(menuHelpButton);
         contentPanel.addComponent(menuPanel);
 
         // ************* GRID PANEL *****************************************
@@ -166,8 +203,16 @@ public class MainWindow extends BasicWindow {
         resultPanel.addComponent(label);
         contentPanel.addComponent(resultPanel);
 
+        // ************* HELP MESSAGE *****************************************
+
+        showMessageDialog("How to use", HOW_TO_MESSAGE);
+
         // This ultimately links in the panels as the window content
         setComponent(contentPanel);
+    }
+
+    private void showMessageDialog(String title, String message) {
+        MessageDialog.showMessageDialog(guiScreen, title, message);
     }
 
     private void cleanBoard(Panel gridPanel) {
@@ -178,7 +223,7 @@ public class MainWindow extends BasicWindow {
         for (Component component : gridPanel.getChildren()) {
             NamedButton button = (NamedButton) component;
             button.setLabel("N");
-            button.setTheme(new Button("").getTheme());
+            button.setTheme(null);
         }
     }
 
@@ -369,8 +414,7 @@ public class MainWindow extends BasicWindow {
     }
 
     private void loadFile() {
-        String pathToExampleFolder = "/run/media/vertiavo/Marek/IdeaProjects/labyrinth-kck/labyrinth/src/main/resources/Examples";
-        File defaultExampleFile = new File(pathToExampleFolder);
+        File defaultExampleFile = new File(EXAMPLE_PATH);
         com.googlecode.lanterna.gui2.dialogs.FileDialog loadInterface = new FileDialog(
                 "Load file",
                 "Choose a file with labyrinth to load",
@@ -379,50 +423,50 @@ public class MainWindow extends BasicWindow {
                 defaultExampleFile);
         File loadFile = loadInterface.showDialog(guiScreen);
 
-        try (BufferedReader reader = Files.newBufferedReader(Paths.get(loadFile.getPath()))) {
+        if (loadFile != null) {
+            try (BufferedReader reader = Files.newBufferedReader(Paths.get(loadFile.getPath()))) {
 
-            String line;
-            Iterator<NamedButton> iterator = buttons.iterator();
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(" ");
-                if (parts.length > 10) {
-                    throw new IllegalArgumentException("Labyrinth file should contain 10x10 dimension array.");
-                }
-                for (String s : parts) {
-                    NamedButton button = iterator.next();
-                    switch (Integer.valueOf(s)) {
-                        case 0:
-                            button.setLabel("N");
-                            button.setTheme(null);
-                            break;
-                        case 2:
-                            button.setLabel("S");
-                            button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 255, 0), SGR.BOLD));
-                            startExists = true;
-                            startButton = button;
-                            break;
-                        case 3:
-                            button.setLabel("F");
-                            button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 255), SGR.BOLD));
-                            finishExists = true;
-                            finishButton = button;
-                            break;
-                        case 1:
-                            button.setLabel("W");
-                            button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 0), SGR.BOLD));
-                            break;
+                String line;
+                Iterator<NamedButton> iterator = buttons.iterator();
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(" ");
+                    if (parts.length > 10) {
+                        throw new IllegalArgumentException(WRONG_SIZE_ARRAY_EXCEPTION);
+                    }
+                    for (String s : parts) {
+                        NamedButton button = iterator.next();
+                        switch (Integer.valueOf(s)) {
+                            case 0:
+                                button.setLabel("N");
+                                button.setTheme(null);
+                                break;
+                            case 2:
+                                button.setLabel("S");
+                                button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 255, 0), SGR.BOLD));
+                                startExists = true;
+                                startButton = button;
+                                break;
+                            case 3:
+                                button.setLabel("F");
+                                button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 255), SGR.BOLD));
+                                finishExists = true;
+                                finishButton = button;
+                                break;
+                            case 1:
+                                button.setLabel("W");
+                                button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 0), SGR.BOLD));
+                                break;
+                        }
                     }
                 }
+            } catch (IOException e) {
+                System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
             }
-        } catch (Exception e) {
-            System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
         }
     }
 
     private void saveFile() {
-        //you sure? vertiavo/Marek?? :D
-        String pathToExampleFolder = "/run/media/vertiavo/Marek/IdeaProjects/labyrinth-kck/labyrinth/src/main/resources/Examples";
-        File defaultExampleFile = new File(pathToExampleFolder);
+        File defaultExampleFile = new File(EXAMPLE_PATH);
         com.googlecode.lanterna.gui2.dialogs.FileDialog saveInterface = new FileDialog(
                 "Save file",
                 "Choose a path to save current labyrinth",
@@ -431,35 +475,41 @@ public class MainWindow extends BasicWindow {
                 defaultExampleFile);
         File saveFile = saveInterface.showDialog(guiScreen);
 
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-                new FileOutputStream(saveFile.getPath()), "utf-8"))) {
-            StringBuilder builder = new StringBuilder();
+        if (saveFile != null) {
+            try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(saveFile.getPath()), "utf-8"))) {
+                StringBuilder builder = new StringBuilder();
 
-            Iterator<NamedButton> iterator = buttons.iterator();
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
-                    NamedButton button = iterator.next();
-                    switch (button.getLabel()) {
-                        case "N":
-                            builder.append(0).append(" ");
-                            break;
-                        case "S":
-                            builder.append(2).append(" ");
-                            break;
-                        case "F":
-                            builder.append(3).append(" ");
-                            break;
-                        case "W":
-                            builder.append(1).append(" ");
-                            break;
+                Iterator<NamedButton> iterator = buttons.iterator();
+                for (int i = 0; i < 10; i++) {
+                    for (int j = 0; j < 10; j++) {
+                        NamedButton button = iterator.next();
+                        switch (button.getLabel()) {
+                            case "N":
+                                builder.append(0).append(" ");
+                                break;
+                            case "R":
+                                builder.append(0).append(" ");
+                                break;
+                            case "S":
+                                builder.append(2).append(" ");
+                                break;
+                            case "F":
+                                builder.append(3).append(" ");
+                                break;
+                            case "W":
+                                builder.append(1).append(" ");
+                                break;
+                        }
                     }
+                    builder.append("\n");
                 }
-                builder.append("\n");
-            }
 
-            writer.write(builder.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
+                writer.write(builder.toString());
+            } catch (IOException e) {
+                System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
