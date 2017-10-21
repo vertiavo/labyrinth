@@ -15,6 +15,7 @@ import com.googlecode.lanterna.gui2.Label;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.dialogs.FileDialog;
 import com.googlecode.lanterna.gui2.dialogs.ListSelectDialog;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 
 import java.awt.*;
 import java.io.*;
@@ -80,18 +81,28 @@ public class MainWindow extends BasicWindow {
             }
         });
 
-        Button[] algorithmButtons = new NamedButton[2];
+        Button[] algorithmButtons = new NamedButton[3];
         algorithmButtons[0] = new NamedButton("Depth First Search");
         algorithmButtons[1] = new NamedButton("Breadth First Search");
-
+        algorithmButtons[2] = new NamedButton("Clean route");
         Button menuAlgorithmButton = new Button("Algorithms", () -> {
 
             Button selected = ListSelectDialog.showDialog(guiScreen, "Algorithms", "Choose algorithm", algorithmButtons);
             if (selected != null) {
                 if (selected.equals(algorithmButtons[0])) {
-                    runDfs();
+                    try {
+                        runDfs();
+                    } catch (Exception e) {
+                        MessageDialog.showMessageDialog(guiScreen, "Labirynth is empty", "Please check if your labirynth has start and end");
+                    }
                 } else if (selected.equals(algorithmButtons[1])) {
-                    runBfs();
+                    try {
+                        runBfs();
+                    } catch (Exception e) {
+                        MessageDialog.showMessageDialog(guiScreen, "Labirynth is empty", "Please check if your labirynth has start and end");
+                    }
+                } else if (selected.equals(algorithmButtons[2])) {
+                    cleanRoute();
                 }
             }
         });
@@ -110,7 +121,7 @@ public class MainWindow extends BasicWindow {
             NamedButton button = new NamedButton("N");
             button.addListener(button1 -> {
                 NamedButton b = (NamedButton) button1;
-                switch(b.getLabel()) {
+                switch (b.getLabel()) {
                     case "N":
                         if (checkStart()) {
                             startButton = b;
@@ -135,9 +146,11 @@ public class MainWindow extends BasicWindow {
                             b.setTheme(new Button("").getTheme());
                         }
                         b.setLabel("W");
+                        b.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 0), SGR.BOLD));
                         break;
                     case "W":
                         b.setLabel("N");
+                        b.setTheme(null);
                         break;
                 }
             });
@@ -213,10 +226,18 @@ public class MainWindow extends BasicWindow {
             for (int j = 0; j < 10; j++) {
                 NamedButton button = iterator.next();
                 switch (button.getLabel()) {
-                    case "N": array[i][j] = 0; break;
-                    case "S": array[i][j] = 2; break;
-                    case "F": array[i][j] = 3; break;
-                    case "W": array[i][j] = 1; break;
+                    case "N":
+                        array[i][j] = 0;
+                        break;
+                    case "S":
+                        array[i][j] = 2;
+                        break;
+                    case "F":
+                        array[i][j] = 3;
+                        break;
+                    case "W":
+                        array[i][j] = 1;
+                        break;
                 }
             }
         }
@@ -358,11 +379,11 @@ public class MainWindow extends BasicWindow {
                 defaultExampleFile);
         File loadFile = loadInterface.showDialog(guiScreen);
 
-        try(BufferedReader reader = Files.newBufferedReader(Paths.get(loadFile.getPath()))) {
+        try (BufferedReader reader = Files.newBufferedReader(Paths.get(loadFile.getPath()))) {
 
             String line;
             Iterator<NamedButton> iterator = buttons.iterator();
-            while((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(" ");
                 if (parts.length > 10) {
                     throw new IllegalArgumentException("Labyrinth file should contain 10x10 dimension array.");
@@ -372,6 +393,7 @@ public class MainWindow extends BasicWindow {
                     switch (Integer.valueOf(s)) {
                         case 0:
                             button.setLabel("N");
+                            button.setTheme(null);
                             break;
                         case 2:
                             button.setLabel("S");
@@ -387,16 +409,18 @@ public class MainWindow extends BasicWindow {
                             break;
                         case 1:
                             button.setLabel("W");
+                            button.setTheme(new SimpleTheme(TextColor.ANSI.DEFAULT, new TextColor.RGB(0, 0, 0), SGR.BOLD));
                             break;
                     }
                 }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getClass().getSimpleName() + " - " + e.getMessage());
         }
     }
 
     private void saveFile() {
+        //you sure? vertiavo/Marek?? :D
         String pathToExampleFolder = "/run/media/vertiavo/Marek/IdeaProjects/labyrinth-kck/labyrinth/src/main/resources/Examples";
         File defaultExampleFile = new File(pathToExampleFolder);
         com.googlecode.lanterna.gui2.dialogs.FileDialog saveInterface = new FileDialog(
@@ -416,10 +440,18 @@ public class MainWindow extends BasicWindow {
                 for (int j = 0; j < 10; j++) {
                     NamedButton button = iterator.next();
                     switch (button.getLabel()) {
-                        case "N": builder.append(0).append(" "); break;
-                        case "S": builder.append(2).append(" "); break;
-                        case "F": builder.append(3).append(" "); break;
-                        case "W": builder.append(1).append(" "); break;
+                        case "N":
+                            builder.append(0).append(" ");
+                            break;
+                        case "S":
+                            builder.append(2).append(" ");
+                            break;
+                        case "F":
+                            builder.append(3).append(" ");
+                            break;
+                        case "W":
+                            builder.append(1).append(" ");
+                            break;
                     }
                 }
                 builder.append("\n");
