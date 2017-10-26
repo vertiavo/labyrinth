@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -19,16 +20,17 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.awt.*;
-import java.awt.Button;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.Queue;
 
 @SuppressWarnings("Duplicates")
 public class Main extends Application {
@@ -79,7 +81,7 @@ public class Main extends Application {
         mainLayout.setTop(setTopMenu());
         mainLayout.setBottom(setBottomLabel());
 
-        showMessageDialog("Welcome", null, WELCOME_MESSAGE);
+        showMessageDialog("Welcome", WELCOME_MESSAGE);
     }
 
     private ScrollPane setBottomLabel() {
@@ -108,33 +110,24 @@ public class Main extends Application {
         menuHelp.getItems().addAll(instructions, buttonLegend);
 
         clear.setOnAction(e -> clearMaze());
-        save.setOnAction(e -> SaveToFile());
+        save.setOnAction(e -> saveToFile());
         load.setOnAction(e -> {
-            LoadFromFile();
+            loadFromFile();
             mainLayout.setCenter(null);
             mainLayout.setCenter(setCenterGrid());
 
-            UpdateGUI();
+            updateGUI();
         });
         exit.setOnAction(e -> System.exit(0));
 
-        instructions.setOnAction(e -> showMessageDialog("Instructions", "How to use application", HOW_TO_MESSAGE));
-        buttonLegend.setOnAction(e -> showMessageDialog("Button Legend", null, BUTTON_LEGEND_MESSAGE));
+        instructions.setOnAction(e ->
+                showMessageDialog("Instructions", HOW_TO_MESSAGE));
+        buttonLegend.setOnAction(e ->
+                showMessageDialog("Button Legend", BUTTON_LEGEND_MESSAGE));
 
         topMenu.getMenus().addAll(menuFile, menuHelp);
 
         return topMenu;
-    }
-
-    private void clearMaze() {
-        for (int i = 0; i < labyrinthElements.length; i++) {
-            Arrays.fill(labyrinthElements[i], 0);
-        }
-
-        mainLayout.setCenter(null);
-        mainLayout.setCenter(setCenterGrid());
-        mainLayout.setBottom(null);
-        mainLayout.setBottom(setBottomLabel());
     }
 
     private void dfsSolution() {
@@ -153,7 +146,7 @@ public class Main extends Application {
         Text text = new Text(stringBuilder.toString());
         text.wrappingWidthProperty().bind(scrollPane.widthProperty());
         scrollPane.setContent(text);
-        UpdateGUI();
+        updateGUI();
     }
 
     private void bfsSolution() {
@@ -206,10 +199,21 @@ public class Main extends Application {
         Text text = new Text(stringBuilder.toString());
         text.wrappingWidthProperty().bind(scrollPane.widthProperty());
         scrollPane.setContent(text);
-        UpdateGUI();
+        updateGUI();
     }
 
-    private void UpdateGUI() {
+    private void clearMaze() {
+        for (int i = 0; i < labyrinthElements.length; i++) {
+            Arrays.fill(labyrinthElements[i], 0);
+        }
+
+        mainLayout.setCenter(null);
+        mainLayout.setCenter(setCenterGrid());
+        mainLayout.setBottom(null);
+        mainLayout.setBottom(setBottomLabel());
+    }
+
+    private void updateGUI() {
         for (int i = 0; i < labyrinthElements.length; i++) {
             for (int j = 0; j < labyrinthElements[i].length; j++) {
                 Pane pane = new Pane();
@@ -237,7 +241,7 @@ public class Main extends Application {
         }
     }
 
-    private void SaveToFile() {
+    private void saveToFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save file");
         File file = fileChooser.showSaveDialog(primaryStage);
@@ -261,7 +265,7 @@ public class Main extends Application {
 
     }
 
-    private void LoadFromFile() {
+    private void loadFromFile() {
 
         try {
             FileChooser fileChooser = new FileChooser();
@@ -287,13 +291,21 @@ public class Main extends Application {
         }
     }
 
-    private void showMessageDialog(String title, String header, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
+    private void showMessageDialog(String title, String content) {
+        Stage dialogStage = new Stage();
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.setTitle(title);
 
-        alert.showAndWait();
+        Button button = new Button("Ok");
+        button.setOnAction(e -> {
+            dialogStage.close();
+        });
+        VBox vbox = new VBox(new Text(content), new Text(""), button);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(15));
+
+        dialogStage.setScene(new Scene(vbox));
+        dialogStage.showAndWait();
     }
 
     private void printLabyrinth() {
@@ -319,7 +331,7 @@ public class Main extends Application {
         return borderPane;
     }
 
-    public HBox addHBox() {
+    private HBox addHBox() {
         HBox contentHBox = new HBox();
         contentHBox.setPadding(new Insets(15, 12, 15, 12));
         contentHBox.setSpacing(10);
@@ -336,10 +348,14 @@ public class Main extends Application {
 
         javafx.scene.control.Button runButton = new javafx.scene.control.Button("Run algorithm");
         runButton.setOnAction(e -> {
-            if (group.getSelectedToggle().toString().contains("DFS")) {
-                dfsSolution();
+            if (checkConditions()) {
+                if (group.getSelectedToggle().toString().contains("DFS")) {
+                    dfsSolution();
+                } else {
+                    bfsSolution();
+                }
             } else {
-                bfsSolution();
+                showMessageDialog("Warning", "You have to select Start and Finish");
             }
         });
 
@@ -424,5 +440,25 @@ public class Main extends Application {
         });
 
         grid.add(pane, colIndex, rowIndex);
+    }
+
+    private boolean checkConditions() {
+        boolean startExists = false, finishExists = false;
+
+        for (int i = 0; i < labyrinthElements.length; i++) {
+            for (int j = 0; j < labyrinthElements.length; j++) {
+                if (labyrinthElements[i][j] == 2) {
+                    startExists = true;
+                } else if (labyrinthElements[i][j] == 3) {
+                    finishExists = true;
+                }
+            }
+        }
+
+        if (startExists && finishExists) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
