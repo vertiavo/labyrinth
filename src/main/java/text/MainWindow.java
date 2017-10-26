@@ -30,9 +30,13 @@ public class MainWindow extends BasicWindow {
 
     private static final String EXAMPLE_PATH = "src/main/resources/Examples";
     private static final String WRONG_SIZE_ARRAY_EXCEPTION = "Labyrinth file should contain 10x10 dimension array.";
+    private static final String WELCOME_MESSAGE = "Hello!\n" +
+            "This application lets you build a labyrinth and find a way from beginning to end using two algorithms.\n" +
+            "To see full window, you have to stretch terminal a little\n" +
+            "To know, how to use this app, visit 'Help' tab in the upper panel.";
     private static final String HOW_TO_MESSAGE = "I CREATE\n" +
             "\tRead legend and build a new labyrinth with buttons. \n" +
-            "<b>II Load</b>\n" +
+            "II Load\n" +
             "\tIn the File panel choose 'Load' option and find .txt file\n" +
             "with coded labyrinth (10x10 dimension) as shown in legend.\n" +
             "III Running algorithm\n" +
@@ -205,7 +209,7 @@ public class MainWindow extends BasicWindow {
 
         // ************* HELP MESSAGE *****************************************
 
-        showMessageDialog("How to use", HOW_TO_MESSAGE);
+        showMessageDialog("Welcome", WELCOME_MESSAGE);
 
         // This ultimately links in the panels as the window content
         setComponent(contentPanel);

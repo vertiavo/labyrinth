@@ -5,28 +5,24 @@ import algorithms.BfsAlgorithm;
 import algorithms.Vertex;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.awt.*;
+import java.awt.Button;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -36,6 +32,23 @@ import java.util.List;
 
 @SuppressWarnings("Duplicates")
 public class Main extends Application {
+
+    private static final String WELCOME_MESSAGE = "Hello!\n" +
+            "This application lets you build a labyrinth and find a way from beginning to end using two algorithms.\n" +
+            "To know, how to use this app, visit 'Help' tab in the upper panel.";
+    private static final String HOW_TO_MESSAGE = "I CREATE\n" +
+            "\tRead legend and build a new labyrinth with buttons. \n" +
+            "II Load\n" +
+            "\tIn the File panel choose 'Load' option and find .txt file " +
+            "with coded labyrinth (20x20 dimension) as shown in legend.\n" +
+            "III Running algorithm\n" +
+            "\tChoose desired algorithm. After finishing, the result will " +
+            "be shown on buttons in grid panel and below them, in the label.\n" +
+            "IV Cleaning\n" +
+            "\tChoose 'Clean' option in File panel to completely remove data from labyrinth.";
+    private static final String BUTTON_LEGEND_MESSAGE = "Left Mouse Click - Place Wall\n" +
+            "First Right Mouse Click - Place Start\n" +
+            "Second Right Mouse Click - Place Finish";
 
     int[][] labyrinthElements;
     int counter = 0;
@@ -65,6 +78,8 @@ public class Main extends Application {
         mainLayout.setCenter(setCenterGrid());
         mainLayout.setTop(setTopMenu());
         mainLayout.setBottom(setBottomLabel());
+
+        showMessageDialog("Welcome", null, WELCOME_MESSAGE);
     }
 
     private ScrollPane setBottomLabel() {
@@ -79,29 +94,21 @@ public class Main extends Application {
         MenuBar topMenu = new MenuBar();
 
         Menu menuFile = new Menu("File");
-        Menu algoFile = new Menu("Algorithm");
+        Menu menuHelp = new Menu("Help");
 
+        MenuItem clear = new MenuItem("Clear");
         MenuItem load = new MenuItem("Load from file");
         MenuItem save = new MenuItem("Save to file");
         MenuItem exit = new MenuItem("Exit");
-        MenuItem clear = new MenuItem("Clear");
 
-        MenuItem bfs = new MenuItem("BFS");
-        MenuItem dfs = new MenuItem("DFS");
+        MenuItem instructions = new MenuItem("Instruction");
+        MenuItem buttonLegend = new MenuItem("Button legend");
 
         menuFile.getItems().addAll(clear, load, save, exit);
-        algoFile.getItems().addAll(bfs, dfs);
+        menuHelp.getItems().addAll(instructions, buttonLegend);
 
-        //obsluga rozwiazania
-        dfs.setOnAction(e -> {
-            dfsSolution();
-        });
-        bfs.setOnAction(e -> {
-            bfsSolution();
-        });
-        save.setOnAction(e -> {
-            SaveToFile();
-        });
+        clear.setOnAction(e -> clearMaze());
+        save.setOnAction(e -> SaveToFile());
         load.setOnAction(e -> {
             LoadFromFile();
             mainLayout.setCenter(null);
@@ -110,11 +117,11 @@ public class Main extends Application {
             UpdateGUI();
         });
         exit.setOnAction(e -> System.exit(0));
-        clear.setOnAction(e -> {
-            clearMaze();
-        });
-        topMenu.getMenus().addAll(menuFile);
-        topMenu.getMenus().addAll(algoFile);
+
+        instructions.setOnAction(e -> showMessageDialog("Instructions", "How to use application", HOW_TO_MESSAGE));
+        buttonLegend.setOnAction(e -> showMessageDialog("Button Legend", null, BUTTON_LEGEND_MESSAGE));
+
+        topMenu.getMenus().addAll(menuFile, menuHelp);
 
         return topMenu;
     }
@@ -280,6 +287,15 @@ public class Main extends Application {
         }
     }
 
+    private void showMessageDialog(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+
+        alert.showAndWait();
+    }
+
     private void printLabyrinth() {
         for (int[] x : labyrinthElements) {
             for (int y : x) {
@@ -289,11 +305,46 @@ public class Main extends Application {
         }
     }
 
-    private GridPane setCenterGrid() {
+    private BorderPane setCenterGrid() {
+        BorderPane borderPane = new BorderPane();
+        HBox buttonBox = addHBox();
+
         grid = new GridPane();
         grid.gridLinesVisibleProperty().setValue(true);
         initialize(grid);
-        return grid;
+
+        borderPane.setTop(buttonBox);
+        borderPane.setCenter(grid);
+
+        return borderPane;
+    }
+
+    public HBox addHBox() {
+        HBox contentHBox = new HBox();
+        contentHBox.setPadding(new Insets(15, 12, 15, 12));
+        contentHBox.setSpacing(10);
+        contentHBox.setAlignment(Pos.CENTER);
+
+        Label label = new Label("Choose algorithm: ");
+
+        ToggleGroup group = new ToggleGroup();
+        RadioButton bfsButton = new RadioButton("BFS");
+        bfsButton.setToggleGroup(group);
+        bfsButton.setSelected(true);
+        RadioButton dfsButton = new RadioButton("DFS");
+        dfsButton.setToggleGroup(group);
+
+        javafx.scene.control.Button runButton = new javafx.scene.control.Button("Run algorithm");
+        runButton.setOnAction(e -> {
+            if (group.getSelectedToggle().toString().contains("DFS")) {
+                dfsSolution();
+            } else {
+                bfsSolution();
+            }
+        });
+
+        contentHBox.getChildren().addAll(label, bfsButton, dfsButton, runButton);
+        return contentHBox;
     }
 
     public void initialize(GridPane grid) {
